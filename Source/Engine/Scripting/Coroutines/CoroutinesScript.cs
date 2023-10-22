@@ -36,23 +36,23 @@ public class CoroutinesScript : Script
     {
         private readonly CoroutinesScript _origin;
         private readonly IEnumerator<ICoroutineSuspender> _enumerator;
-        private ICoroutineSuspender? _currentSuspendor;
+        private ICoroutineSuspender? _currentSuspender;
 
         public CoroutineExecutor(CoroutinesScript origin, IEnumerator<ICoroutineSuspender> enumerator)
         {
             _origin = origin;
             _enumerator = enumerator;
-            _currentSuspendor = _enumerator.Current;
+            _currentSuspender = _enumerator.Current;
         }
 
         /// <inheritdoc />
         public void Dispose()
         {
-            if (_currentSuspendor != null)
+            if (_currentSuspender != null)
             {
                 Debug.LogWarning(
                     $"The coroutine has not ended its execution before disposal. " +
-                    $"Suspendor: {_currentSuspendor} (on {_currentSuspendor?.SuspensionPoints})"
+                    $"Suspender: {_currentSuspender} (on {_currentSuspender?.SuspensionPoints})"
                 );
             }
 
@@ -67,7 +67,7 @@ public class CoroutinesScript : Script
         /// </returns>
         public bool Stop()
         {
-            _currentSuspendor = null;
+            _currentSuspender = null;
             return _enumerator.MoveNext();
         }
 
@@ -77,12 +77,12 @@ public class CoroutinesScript : Script
             var suspensionPointAsFlag = (CoroutineSuspensionPointsFlags)(1 << (int)suspensionPoint);
 
             // If there is no blocker ahead of the current coroutine, get to the next one.
-            if (_currentSuspendor == null)
+            if (_currentSuspender == null)
             {
                 // If there is a coroutine to execute, execute it.
                 if (_enumerator.MoveNext()) // Code between blocking points is invoked here.
                 {
-                    _currentSuspendor = _enumerator.Current;
+                    _currentSuspender = _enumerator.Current;
                 }
 
                 // If there is no more coroutine code to execute, return false.
@@ -93,18 +93,18 @@ public class CoroutinesScript : Script
             }
 
             // If the current coroutine does not suspend at the given point, return true and keep coroutine suspended at given blocker.
-            if (!_currentSuspendor.SuspensionPoints.HasFlag(suspensionPointAsFlag))
+            if (!_currentSuspender.SuspensionPoints.HasFlag(suspensionPointAsFlag))
             {
                 return true;
             }
 
             // Update the current coroutine blocker.
-            var blocking = _currentSuspendor.Step(suspensionPoint);
+            var blocking = _currentSuspender.Step(suspensionPoint);
 
             // If the current coroutine blocker is not blocking anymore, set it to null and prepare to execute the next chunk of coroutine.
             if (!blocking)
             {
-                _currentSuspendor = null;
+                _currentSuspender = null;
             }
 
             return true;
