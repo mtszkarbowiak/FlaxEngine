@@ -12,20 +12,26 @@ namespace FlaxEngine;
 /// </remarks>
 public sealed class WaitForLoop : ICoroutineSuspendor
 {
-    private readonly CoroutineSuspensionPointsFlags _coroutineSuspensionPoint;
+    private readonly CoroutineSuspensionPointsFlags _flags;
 
     /// <inheritdoc />
-    bool ICoroutineSuspendor.Step(CoroutineSuspensionPointIndex suspensionPoint)
+    bool ICoroutineSuspendor.Step(CoroutineSuspensionPointIndex index)
     {
+        Assert.AreEqual(
+            _flags,
+            (CoroutineSuspensionPointsFlags)(1 << (int)index),
+            $"{nameof(WaitForLoop)} must not step at {index}. Expected one of: {_flags}."
+        );
+
         return false;
     }
 
     /// <inheritdoc />
-    CoroutineSuspensionPointsFlags ICoroutineSuspendor.SuspensionPoints => _coroutineSuspensionPoint;
+    CoroutineSuspensionPointsFlags ICoroutineSuspendor.SuspensionPoints => _flags;
 
     private WaitForLoop(CoroutineSuspensionPointIndex coroutineSuspensionPoint)
     {
-        _coroutineSuspensionPoint = (CoroutineSuspensionPointsFlags)(1 << (int)coroutineSuspensionPoint);
+        _flags = (CoroutineSuspensionPointsFlags)(1 << (int)coroutineSuspensionPoint);
     }
 
     public static WaitForLoop Update { get; } = new(CoroutineSuspensionPointIndex.Update);
