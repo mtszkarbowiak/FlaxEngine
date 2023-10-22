@@ -169,6 +169,20 @@ public class CoroutinesScript : Script
         }
     }
 
+    /// <summary>
+    ///     Disposes all coroutines (using <see cref="ICoroutine.Dispose"/>) without stopping them.
+    /// </summary>
+    protected void TerminateAllCoroutines()
+    {
+        foreach (var executor in _executors)
+        {
+            executor.Dispose();
+        }
+
+        _executors.Clear();
+    }
+
+
     private void ExecuteStep(CoroutineSuspensionPointIndex suspensionPoint)
     {
         for (var i = 0; i < _executors.Count; i++)
@@ -183,5 +197,47 @@ public class CoroutinesScript : Script
             StopCoroutine(ref stoppedCoroutine);
             i--;
         }
+    }
+
+
+    /// <inheritdoc />
+    public override void OnUpdate()
+    {
+        base.OnUpdate();
+
+        ExecuteStep(CoroutineSuspensionPointIndex.Update);
+    }
+
+    /// <inheritdoc />
+    public override void OnFixedUpdate()
+    {
+        base.OnFixedUpdate();
+
+        ExecuteStep(CoroutineSuspensionPointIndex.FixedUpdate);
+    }
+
+    /// <inheritdoc />
+    public override void OnLateUpdate()
+    {
+        base.OnLateUpdate();
+
+        ExecuteStep(CoroutineSuspensionPointIndex.LateUpdate);
+    }
+
+    /// <inheritdoc />
+    public override void OnLateFixedUpdate()
+    {
+        base.OnLateFixedUpdate();
+
+        ExecuteStep(CoroutineSuspensionPointIndex.LateFixedUpdate);
+    }
+
+
+    /// <inheritdoc />
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+
+        TerminateAllCoroutines();
     }
 }

@@ -12,7 +12,7 @@ public interface ICoroutineSuspendor
     ///		Makes a single update coming from the executor.
     /// </summary>
     /// <returns>
-    ///		<c>true</c> if the coroutine is still being blocker from further execution.
+    ///		<c>true</c> if the coroutine is blocked from further execution.
     /// </returns>
     bool Step(CoroutineSuspensionPointIndex suspensionPoint);
 
