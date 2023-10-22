@@ -2,10 +2,9 @@
 
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace FlaxEngine;
-
-using System.Collections.Generic;
 
 /// <summary>
 ///     Script that can controls execution of coroutines.
@@ -36,10 +35,10 @@ public class CoroutinesScript : Script
     private sealed class CoroutineExecutor : ICoroutine
     {
         private readonly CoroutinesScript _origin;
-        private readonly IEnumerator<ICouroutineSuspendor> _enumerator;
-        private ICouroutineSuspendor? _currentSuspendor;
+        private readonly IEnumerator<ICoroutineSuspendor> _enumerator;
+        private ICoroutineSuspendor? _currentSuspendor;
 
-        public CoroutineExecutor(CoroutinesScript origin, IEnumerator<ICouroutineSuspendor> enumerator)
+        public CoroutineExecutor(CoroutinesScript origin, IEnumerator<ICoroutineSuspendor> enumerator)
         {
             _origin = origin;
             _enumerator = enumerator;
@@ -81,13 +80,31 @@ public class CoroutinesScript : Script
 
     private readonly List<CoroutineExecutor> _executors = new();
 
-    public ICoroutine StartCoroutine(IEnumerator<ICouroutineSuspendor> routine)
+    /// <summary>
+    ///     Starts a new coroutine.
+    /// </summary>
+    /// <param name="routine">
+    ///     Enumerator function to have its code executed.
+    /// </param>
+    /// <returns>
+    ///     Handle to the coroutine.
+    /// </returns>
+    public ICoroutine StartCoroutine(IEnumerator<ICoroutineSuspendor> routine)
     {
         var executor = new CoroutineExecutor(this, routine);
         _executors.Add(executor);
         return executor;
     }
 
+    /// <summary>
+    ///     Stops coroutine before reaching its end. Removes link between the coroutine and its origin script.
+    /// </summary>
+    /// <remarks>
+    ///     Warning: Coroutine enumerator function can have logic of disposal of object at its end. It may be skipped.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">
+    ///     The coroutine must be terminated by the same script which created it.
+    /// </exception>
     public void StopCoroutine(ref ICoroutine? coroutine)
     {
         if (coroutine is not CoroutineExecutor executor)
@@ -106,6 +123,9 @@ public class CoroutinesScript : Script
         coroutine = null;
     }
 
+    /// <summary>
+    ///     Stops all couroutines (using <see cref="StopCoroutine"/>).
+    /// </summary>
     public void StopAllCoroutines()
     {
         while (_executors.Count > 0)

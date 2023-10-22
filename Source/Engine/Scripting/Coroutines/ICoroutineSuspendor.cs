@@ -6,7 +6,7 @@ namespace FlaxEngine;
 /// <remarks>
 ///     This object will not be disposed automatically. It is up to the coroutine to dispose it.
 /// </remarks>
-public interface ICouroutineSuspendor //TODO(mtszkarbowiak) Fix typo.
+public interface ICoroutineSuspendor //TODO(mtszkarbowiak) Fix typo.
 {
     /// <summary>
     ///		Makes a single update coming from the executor.
