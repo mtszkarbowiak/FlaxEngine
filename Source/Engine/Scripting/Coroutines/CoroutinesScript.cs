@@ -74,7 +74,40 @@ public class CoroutinesScript : Script
         /// <inheritdoc/>
         public bool Step(CoroutineSuspensionPointIndex suspensionPoint)
         {
-            //TODO(mtszkarbowiak) Implement.
+            var suspensionPointAsFlag = (CoroutineSuspensionPointsFlags)(1 << (int)suspensionPoint);
+
+            // If there is no blocker ahead of the current coroutine, get to the next one.
+            if (_currentSuspendor == null)
+            {
+                // If there is a coroutine to execute, execute it.
+                if (_enumerator.MoveNext()) // Code between blocking points is invoked here.
+                {
+                    _currentSuspendor = _enumerator.Current;
+                }
+
+                // If there is no more coroutine code to execute, return false.
+                else
+                {
+                    return false;
+                }
+            }
+
+            // If the current coroutine does not suspend at the given point, return true and keep coroutine suspended at given blocker.
+            if (!_currentSuspendor.SuspensionPoints.HasFlag(suspensionPointAsFlag))
+            {
+                return true;
+            }
+
+            // Update the current coroutine blocker.
+            var blocking = _currentSuspendor.Step(suspensionPoint);
+
+            // If the current coroutine blocker is not blocking anymore, set it to null and prepare to execute the next chunk of coroutine.
+            if (!blocking)
+            {
+                _currentSuspendor = null;
+            }
+
+            return true;
         }
     }
 
@@ -137,6 +170,17 @@ public class CoroutinesScript : Script
 
     private void ExecuteStep(CoroutineSuspensionPointIndex suspensionPoint)
     {
-        throw new NotImplementedException(); //TODO(mtszkarbowiak) Implement.
+        for (var i = 0; i < _executors.Count; i++)
+        {
+            var executor = _executors[i];
+            if (executor.Step(suspensionPoint))
+            {
+                continue;
+            }
+            
+            ICoroutine? stoppedCoroutine = executor;
+            StopCoroutine(ref stoppedCoroutine);
+            i--;
+        }
     }
 }
