@@ -11,7 +11,7 @@ namespace FlaxEngine;
 ///     To reduce GC pressure this class can be reused.
 ///     To do so, call <see cref="ExpectedFramesCount"/> and <see cref="PassedFrames"/> are exposed.
 /// </remarks>
-public sealed class WaitForFrames : ICoroutineSuspendor
+public sealed class WaitForFrames : ICoroutineSuspender
 {
     /// <summary>
     ///		How many frames the coroutine should be suspended.
@@ -42,7 +42,7 @@ public sealed class WaitForFrames : ICoroutineSuspendor
     }
 
 
-    bool ICoroutineSuspendor.Step(CoroutineSuspensionPointIndex suspensionPoint)
+    bool ICoroutineSuspender.Step(CoroutineSuspensionPointIndex suspensionPoint)
     {
         Assert.IsTrue(
           suspensionPoint == CoroutineSuspensionPointIndex.Update,
@@ -53,7 +53,7 @@ public sealed class WaitForFrames : ICoroutineSuspendor
         return PassedFrames <= ExpectedFramesCount;
     }
 
-    CoroutineSuspensionPointsFlags ICoroutineSuspendor.SuspensionPoints
+    CoroutineSuspensionPointsFlags ICoroutineSuspender.SuspensionPoints
     {
         get => CoroutineSuspensionPointsFlags.Update;
     }

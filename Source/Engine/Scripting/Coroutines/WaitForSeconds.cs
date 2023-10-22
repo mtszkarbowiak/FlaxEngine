@@ -11,7 +11,7 @@ namespace FlaxEngine;
 ///     To reduce GC pressure this class can be reused.
 ///     To do so, call <see cref="ExpectedDuration"/> and <see cref="PassedDuration"/> are exposed.
 /// </remarks>
-public sealed class WaitForSeconds : ICoroutineSuspendor
+public sealed class WaitForSeconds : ICoroutineSuspender
 {
     /// <summary>
     ///		How long the coroutine should be suspended.
@@ -47,7 +47,7 @@ public sealed class WaitForSeconds : ICoroutineSuspendor
     }
 
 
-    bool ICoroutineSuspendor.Step(CoroutineSuspensionPointIndex suspensionPoint)
+    bool ICoroutineSuspender.Step(CoroutineSuspensionPointIndex suspensionPoint)
     {
         Assert.IsTrue(
           suspensionPoint == CoroutineSuspensionPointIndex.Update,
@@ -60,7 +60,7 @@ public sealed class WaitForSeconds : ICoroutineSuspendor
         return PassedDuration <= ExpectedDuration;
     }
 
-    CoroutineSuspensionPointsFlags ICoroutineSuspendor.SuspensionPoints
+    CoroutineSuspensionPointsFlags ICoroutineSuspender.SuspensionPoints
     {
         get => CoroutineSuspensionPointsFlags.Update;
     }

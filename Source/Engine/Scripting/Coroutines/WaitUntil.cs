@@ -8,7 +8,7 @@ namespace FlaxEngine;
 /// <remarks>
 ///     Note: Make sure that the predicate captures the state of the coroutine correctly.
 /// </remarks>
-public sealed class WaitUntil : ICoroutineSuspendor
+public sealed class WaitUntil : ICoroutineSuspender
 {
     private readonly System.Func<bool> _predicate;
 

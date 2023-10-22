@@ -10,12 +10,12 @@ namespace FlaxEngine;
 /// <remarks>
 ///     To use this class, use one of the static instances.
 /// </remarks>
-public sealed class WaitForLoop : ICoroutineSuspendor
+public sealed class WaitForLoop : ICoroutineSuspender
 {
     private readonly CoroutineSuspensionPointsFlags _flags;
 
     /// <inheritdoc />
-    bool ICoroutineSuspendor.Step(CoroutineSuspensionPointIndex index)
+    bool ICoroutineSuspender.Step(CoroutineSuspensionPointIndex index)
     {
         Assert.AreEqual(
             _flags,
@@ -27,7 +27,7 @@ public sealed class WaitForLoop : ICoroutineSuspendor
     }
 
     /// <inheritdoc />
-    CoroutineSuspensionPointsFlags ICoroutineSuspendor.SuspensionPoints => _flags;
+    CoroutineSuspensionPointsFlags ICoroutineSuspender.SuspensionPoints => _flags;
 
     private WaitForLoop(CoroutineSuspensionPointIndex coroutineSuspensionPoint)
     {

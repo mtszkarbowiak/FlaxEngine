@@ -35,10 +35,10 @@ public class CoroutinesScript : Script
     private sealed class CoroutineExecutor : ICoroutine
     {
         private readonly CoroutinesScript _origin;
-        private readonly IEnumerator<ICoroutineSuspendor> _enumerator;
-        private ICoroutineSuspendor? _currentSuspendor;
+        private readonly IEnumerator<ICoroutineSuspender> _enumerator;
+        private ICoroutineSuspender? _currentSuspendor;
 
-        public CoroutineExecutor(CoroutinesScript origin, IEnumerator<ICoroutineSuspendor> enumerator)
+        public CoroutineExecutor(CoroutinesScript origin, IEnumerator<ICoroutineSuspender> enumerator)
         {
             _origin = origin;
             _enumerator = enumerator;
@@ -122,7 +122,7 @@ public class CoroutinesScript : Script
     /// <returns>
     ///     Handle to the coroutine.
     /// </returns>
-    public ICoroutine StartCoroutine(IEnumerator<ICoroutineSuspendor> routine)
+    public ICoroutine StartCoroutine(IEnumerator<ICoroutineSuspender> routine)
     {
         var executor = new CoroutineExecutor(this, routine);
         _executors.Add(executor);
