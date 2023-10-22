@@ -1,4 +1,4 @@
-﻿namespace FlaxEngine;
+namespace FlaxEngine;
 
 /// <summary>
 ///     Provides information about a suspension of a coroutine.
@@ -6,7 +6,7 @@
 /// <remarks>
 ///     This object will not be disposed automatically. It is up to the coroutine to dispose it.
 /// </remarks>
-public interface ICouroutineSuspendor
+public interface ICouroutineSuspendor //TODO(mtszkarbowiak) Fix typo.
 {
     /// <summary>
     ///		Makes a single update coming from the executor.

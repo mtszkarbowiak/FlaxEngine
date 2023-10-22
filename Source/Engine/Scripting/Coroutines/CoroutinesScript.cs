@@ -16,12 +16,24 @@ using System.Collections.Generic;
 /// </remarks>
 public class CoroutinesScript : Script
 {
-    public interface ICoroutine
+    /// <summary>
+    ///     Handle to a coroutine.
+    /// </summary>
+    public interface ICoroutine : IDisposable
     {
-        //TODO(mtszkarbowiak) Implement.
+        /// <summary>
+        ///     Attempts to make a step on the coroutine.
+        /// </summary>
+        /// <remarks>
+        ///     Next element is taken from the coroutine's enumerator.
+        /// </remarks>
+        /// <returns>
+        ///     <c>true</c> if the coroutine has not finished yet.
+        /// </returns>
+        bool Step(CoroutineSuspensionPointIndex suspensionPoint);
     }
 
-    private sealed class CoroutineExecutor : ICoroutine, IDisposable
+    private sealed class CoroutineExecutor : ICoroutine
     {
         private readonly CoroutinesScript _origin;
         private readonly IEnumerator<ICouroutineSuspendor> _enumerator;
@@ -48,18 +60,26 @@ public class CoroutinesScript : Script
             _enumerator.Dispose();
         }
 
-        public void Stop()
+        /// <summary>
+        ///     Terminates coroutine execution without waiting.
+        /// </summary>
+        /// <returns>
+        ///     <c>true</c> if there are some skipped steps.
+        /// </returns>
+        public bool Stop()
         {
-            //TODO(mtszkarbowiak) Implement.
+            _currentSuspendor = null;
+            return _enumerator.MoveNext();
         }
 
-        public void Execute(CoroutineSuspensionPointIndex suspensionPoint)
+        /// <inheritdoc/>
+        public bool Step(CoroutineSuspensionPointIndex suspensionPoint)
         {
             //TODO(mtszkarbowiak) Implement.
         }
     }
 
-    private List<CoroutineExecutor> _executors = new();
+    private readonly List<CoroutineExecutor> _executors = new();
 
     public ICoroutine StartCoroutine(IEnumerator<ICouroutineSuspendor> routine)
     {
@@ -95,7 +115,7 @@ public class CoroutinesScript : Script
         }
     }
 
-    private void ExecuteStep()
+    private void ExecuteStep(CoroutineSuspensionPointIndex suspensionPoint)
     {
         throw new NotImplementedException(); //TODO(mtszkarbowiak) Implement.
     }
