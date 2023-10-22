@@ -138,14 +138,14 @@ public class CoroutinesScript : Script
     /// <exception cref="InvalidOperationException">
     ///     The coroutine must be terminated by the same script which created it.
     /// </exception>
-    public void StopCoroutine(ref ICoroutine? coroutine)
+    public bool StopCoroutine(ref ICoroutine? coroutine)
     {
         if (coroutine is not CoroutineExecutor executor)
         {
             throw new InvalidOperationException("This is not a coroutine coming from this script!");
         }
 
-        executor.Stop();
+        var result = executor.Stop();
         executor.Dispose();
 
         if (!_executors.Remove(executor))
@@ -154,10 +154,11 @@ public class CoroutinesScript : Script
         }
 
         coroutine = null;
+        return result;
     }
 
     /// <summary>
-    ///     Stops all couroutines (using <see cref="StopCoroutine"/>).
+    ///     Stops all coroutines (using <see cref="StopCoroutine"/>).
     /// </summary>
     public void StopAllCoroutines()
     {
