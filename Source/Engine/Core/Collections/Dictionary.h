@@ -141,9 +141,7 @@ public:
     /// <summary>
     /// Initializes a new instance of the <see cref="Dictionary"/> class.
     /// </summary>
-    Dictionary()
-    {
-    }
+    Dictionary() = default;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Dictionary"/> class.
@@ -862,14 +860,14 @@ public:
         return Iterator(this, _size);
     }
 
-    const Iterator begin() const
+    Iterator begin() const
     {
         Iterator i(this, -1);
         ++i;
         return i;
     }
 
-    FORCE_INLINE const Iterator end() const
+    FORCE_INLINE Iterator end() const
     {
         return Iterator(this, _size);
     }

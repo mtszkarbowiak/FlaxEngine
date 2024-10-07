@@ -66,7 +66,7 @@ public:
     /// <param name="initList">The initial values defined in the array.</param>
     Array(std::initializer_list<T> initList)
     {
-        _count = _capacity = (int32)initList.size();
+        _count = _capacity = static_cast<int32>(initList.size());
         if (_count > 0)
         {
             _allocation.Allocate(_count);
@@ -160,8 +160,8 @@ public:
         Clear();
         if (initList.size() > 0)
         {
-            EnsureCapacity((int32)initList.size());
-            _count = (int32)initList.size();
+            EnsureCapacity(static_cast<int32>(initList.size()));
+            _count = static_cast<int32>(initList.size());
             Memory::ConstructItems(_allocation.Get(), initList.begin(), _count);
         }
         return *this;
@@ -661,7 +661,7 @@ public:
     /// <param name="item">The item to remove.</param>
     void RemoveAllKeepOrder(const T& item)
     {
-        for (int32 i = Count() - 1; i >= 0; i--)
+        for (int32 i = Count() - 1; i >= 0; --i)
         {
             if (_allocation.Get()[i] == item)
             {
@@ -712,7 +712,7 @@ public:
     /// <param name="item">The item to remove.</param>
     void RemoveAll(const T& item)
     {
-        for (int32 i = Count() - 1; i >= 0; i--)
+        for (int32 i = Count() - 1; i >= 0; --i)
         {
             if (_allocation.Get()[i] == item)
             {

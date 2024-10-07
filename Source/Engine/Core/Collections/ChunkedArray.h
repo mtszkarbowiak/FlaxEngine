@@ -24,9 +24,7 @@ private:
     Array<Chunk*, InlinedAllocation<32>> _chunks;
 
 public:
-    ChunkedArray()
-    {
-    }
+    ChunkedArray() = default;
 
     ~ChunkedArray()
     {
@@ -37,7 +35,7 @@ public:
     /// <summary>
     /// Gets the amount of the elements in the collection.
     /// </summary>
-    FORCE_INLINE int32 Count() const
+    FORCE_INLINE NODISCARD int32 Count() const
     {
         return _count;
     }
@@ -45,7 +43,7 @@ public:
     /// <summary>
     /// Gets the amount of the elements that can be hold by collection without resizing.
     /// </summary>
-    FORCE_INLINE int32 Capacity() const
+    FORCE_INLINE NODISCARD int32 Capacity() const
     {
         return _chunks.Count() * ChunkSize;
     }
@@ -53,7 +51,7 @@ public:
     /// <summary>
     /// Returns true if array isn't empty.
     /// </summary>
-    FORCE_INLINE bool HasItems() const
+    FORCE_INLINE NODISCARD bool HasItems() const
     {
         return _count != 0;
     }
@@ -61,7 +59,7 @@ public:
     /// <summary>
     /// Returns true if collection is empty.
     /// </summary>
-    FORCE_INLINE bool IsEmpty() const
+    FORCE_INLINE NODISCARD bool IsEmpty() const
     {
         return _count == 0;
     }
@@ -461,12 +459,12 @@ public:
         return Iterator(this, _count);
     }
 
-    FORCE_INLINE const Iterator begin() const
+    FORCE_INLINE Iterator begin() const
     {
         return Iterator(this, 0);
     }
 
-    FORCE_INLINE const Iterator end() const
+    FORCE_INLINE Iterator end() const
     {
         return Iterator(this, _count);
     }
