@@ -104,9 +104,29 @@
 #define DEPRECATED(...) _DEPRECATED(, ##__VA_ARGS__, _DEPRECATED_1(__VA_ARGS__), _DEPRECATED_0())
 
 
-// C++ 17
+// C++ 17 
 #if __cplusplus >= 201703L
-#define IF_CONSTEXPR constexpr
+    #define IF_CONSTEXPR constexpr
+    #define NODISCARD [[nodiscard]]
+
+    #define FALLTHROUGH [[fallthrough]]
+    #define MAYBE_UNUSED [[maybe_unused]]
+
 #else
-#define IF_CONSTEXPR
+    #define IF_CONSTEXPR
+    #define NODISCARD
+
+    #if defined(_MSC_VER)
+        #define FALLTHROUGH __fallthrough
+        #define MAYBE_UNUSED
+
+    #elif defined(__clang__) || defined(__GNUC__)
+        #define FALLTHROUGH __attribute__((fallthrough))
+        #define MAYBE_UNUSED __attribute__((unused))
+
+    #else
+        #define FALLTHROUGH
+        #define MAYBE_UNUSED
+
+    #endif
 #endif
