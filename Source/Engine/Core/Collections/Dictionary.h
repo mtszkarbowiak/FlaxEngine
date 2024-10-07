@@ -224,7 +224,7 @@ public:
     /// <summary>
     /// Gets the amount of the elements in the collection.
     /// </summary>
-    FORCE_INLINE int32 Count() const
+    FORCE_INLINE NODISCARD int32 Count() const
     {
         return _elementsCount;
     }
@@ -232,7 +232,7 @@ public:
     /// <summary>
     /// Gets the amount of the elements that can be contained by the collection.
     /// </summary>
-    FORCE_INLINE int32 Capacity() const
+    FORCE_INLINE NODISCARD int32 Capacity() const
     {
         return _size;
     }
@@ -240,7 +240,7 @@ public:
     /// <summary>
     /// Returns true if collection is empty.
     /// </summary>
-    FORCE_INLINE bool IsEmpty() const
+    FORCE_INLINE NODISCARD bool IsEmpty() const
     {
         return _elementsCount == 0;
     }
@@ -248,7 +248,7 @@ public:
     /// <summary>
     /// Returns true if collection has one or more elements.
     /// </summary>
-    FORCE_INLINE bool HasItems() const
+    FORCE_INLINE NODISCARD bool HasItems() const
     {
         return _elementsCount != 0;
     }
@@ -449,7 +449,7 @@ public:
     /// <param name="key">The key of the element.</param>
     /// <returns>The value that is at given index.</returns>
     template<typename KeyComparableType>
-    FORCE_INLINE ValueType& operator[](const KeyComparableType& key)
+    FORCE_INLINE NODISCARD ValueType& operator[](const KeyComparableType& key)
     {
         return At(key);
     }
@@ -460,7 +460,7 @@ public:
     /// <param name="key">The ky of the element.</param>
     /// <returns>The value that is at given index.</returns>
     template<typename KeyComparableType>
-    FORCE_INLINE const ValueType& operator[](const KeyComparableType& key) const
+    FORCE_INLINE NODISCARD const ValueType& operator[](const KeyComparableType& key) const
     {
         return At(key);
     }
@@ -472,7 +472,7 @@ public:
     /// <param name="result">The result value.</param>
     /// <returns>True if element of given key has been found, otherwise false.</returns>
     template<typename KeyComparableType>
-    bool TryGet(const KeyComparableType& key, ValueType& result) const
+    NODISCARD bool TryGet(const KeyComparableType& key, ValueType& result) const
     {
         if (IsEmpty())
             return false;
@@ -490,7 +490,7 @@ public:
     /// <param name="key">The ky of the element.</param>
     /// <returns>Pointer to the element value or null if cannot find it.</returns>
     template<typename KeyComparableType>
-    ValueType* TryGet(const KeyComparableType& key) const
+    NODISCARD ValueType* TryGet(const KeyComparableType& key) const
     {
         if (IsEmpty())
             return nullptr;
@@ -734,7 +734,7 @@ public:
     /// <param name="key">The key to find.</param>
     /// <returns>The iterator for the found element or End if cannot find it.</returns>
     template<typename KeyComparableType>
-    Iterator Find(const KeyComparableType& key) const
+    NODISCARD Iterator Find(const KeyComparableType& key) const
     {
         if (IsEmpty())
             return End();
@@ -749,7 +749,7 @@ public:
     /// <param name="key">The key to find.</param>
     /// <returns>True if key has been found in a collection, otherwise false.</returns>
     template<typename KeyComparableType>
-    bool ContainsKey(const KeyComparableType& key) const
+    NODISCARD bool ContainsKey(const KeyComparableType& key) const
     {
         if (IsEmpty())
             return false;
@@ -763,7 +763,7 @@ public:
     /// </summary>
     /// <param name="value">The value to find.</param>
     /// <returns>True if value has been found in a collection, otherwise false.</returns>
-    bool ContainsValue(const ValueType& value) const
+    NODISCARD bool ContainsValue(const ValueType& value) const
     {
         if (HasItems())
         {
@@ -783,7 +783,7 @@ public:
     /// <param name="value">The value of the key to find.</param>
     /// <param name="key">The output key.</param>
     /// <returns>True if value has been found, otherwise false.</returns>
-    bool KeyOf(const ValueType& value, KeyType* key) const
+    NODISCARD bool KeyOf(const ValueType& value, KeyType* key) const
     {
         if (HasItems())
         {

@@ -221,7 +221,7 @@ public:
     /// <summary>
     /// Gets the amount of the items in the collection.
     /// </summary>
-    FORCE_INLINE int32 Count() const
+    FORCE_INLINE NODISCARD int32 Count() const
     {
         return _count;
     }
@@ -229,7 +229,7 @@ public:
     /// <summary>
     /// Gets the amount of the items that can be contained by collection without resizing.
     /// </summary>
-    FORCE_INLINE int32 Capacity() const
+    FORCE_INLINE NODISCARD int32 Capacity() const
     {
         return _capacity;
     }
@@ -237,7 +237,7 @@ public:
     /// <summary>
     /// Returns true if collection isn't empty.
     /// </summary>
-    FORCE_INLINE bool HasItems() const
+    FORCE_INLINE NODISCARD bool HasItems() const
     {
         return _count != 0;
     }
@@ -245,7 +245,7 @@ public:
     /// <summary>
     /// Returns true if collection is empty.
     /// </summary>
-    FORCE_INLINE bool IsEmpty() const
+    FORCE_INLINE NODISCARD bool IsEmpty() const
     {
         return _count == 0;
     }
@@ -255,7 +255,7 @@ public:
     /// </summary>
     /// <param name="index">The index.</param>
     /// <returns><c>true</c> if is valid a index; otherwise, <c>false</c>.</returns>
-    bool IsValidIndex(int32 index) const
+    NODISCARD bool IsValidIndex(int32 index) const
     {
         return index < _count && index >= 0;
     }
@@ -263,7 +263,7 @@ public:
     /// <summary>
     /// Gets the pointer to the first item in the collection (linear allocation).
     /// </summary>
-    FORCE_INLINE T* Get()
+    FORCE_INLINE NODISCARD T* Get()
     {
         return _allocation.Get();
     }
@@ -271,7 +271,7 @@ public:
     /// <summary>
     /// Gets the pointer to the first item in the collection (linear allocation).
     /// </summary>
-    FORCE_INLINE const T* Get() const
+    FORCE_INLINE NODISCARD const T* Get() const
     {
         return _allocation.Get();
     }
@@ -280,7 +280,7 @@ public:
     /// Gets item at the given index.
     /// </summary>
     /// <returns>The reference to the item.</returns>
-    FORCE_INLINE T& At(int32 index)
+    FORCE_INLINE NODISCARD T& At(int32 index)
     {
         ASSERT(index >= 0 && index < _count);
         return _allocation.Get()[index];
@@ -290,7 +290,7 @@ public:
     /// Gets item at the given index.
     /// </summary>
     /// <returns>The reference to the item.</returns>
-    FORCE_INLINE const T& At(int32 index) const
+    FORCE_INLINE NODISCARD const T& At(int32 index) const
     {
         ASSERT(index >= 0 && index < _count);
         return _allocation.Get()[index];
@@ -300,7 +300,7 @@ public:
     /// Gets or sets the item at the given index.
     /// </summary>
     /// <returns>The reference to the item.</returns>
-    FORCE_INLINE T& operator[](int32 index)
+    FORCE_INLINE NODISCARD T& operator[](int32 index)
     {
         ASSERT(index >= 0 && index < _count);
         return _allocation.Get()[index];
@@ -310,7 +310,7 @@ public:
     /// Gets the item at the given index.
     /// </summary>
     /// <returns>The reference to the item.</returns>
-    FORCE_INLINE const T& operator[](int32 index) const
+    FORCE_INLINE NODISCARD const T& operator[](int32 index) const
     {
         ASSERT(index >= 0 && index < _count);
         return _allocation.Get()[index];
@@ -319,7 +319,7 @@ public:
     /// <summary>
     /// Gets the last item.
     /// </summary>
-    FORCE_INLINE T& Last()
+    FORCE_INLINE NODISCARD T& Last()
     {
         ASSERT(_count > 0);
         return _allocation.Get()[_count - 1];
@@ -328,7 +328,7 @@ public:
     /// <summary>
     /// Gets the last item.
     /// </summary>
-    FORCE_INLINE const T& Last() const
+    FORCE_INLINE NODISCARD const T& Last() const
     {
         ASSERT(_count > 0);
         return _allocation.Get()[_count - 1];
@@ -337,7 +337,7 @@ public:
     /// <summary>
     /// Gets the first item.
     /// </summary>
-    FORCE_INLINE T& First()
+    FORCE_INLINE NODISCARD T& First()
     {
         ASSERT(_count > 0);
         return _allocation.Get()[0];
@@ -346,29 +346,29 @@ public:
     /// <summary>
     /// Gets the first item.
     /// </summary>
-    FORCE_INLINE const T& First() const
+    FORCE_INLINE NODISCARD const T& First() const
     {
         ASSERT(_count > 0);
         return _allocation.Get()[0];
     }
 
 public:
-    FORCE_INLINE T* begin()
+    FORCE_INLINE NODISCARD T* begin()
     {
         return &_allocation.Get()[0];
     }
 
-    FORCE_INLINE T* end()
+    FORCE_INLINE NODISCARD T* end()
     {
         return &_allocation.Get()[_count];
     }
 
-    FORCE_INLINE const T* begin() const
+    FORCE_INLINE NODISCARD const T* begin() const
     {
         return &_allocation.Get()[0];
     }
 
-    FORCE_INLINE const T* end() const
+    FORCE_INLINE NODISCARD const T* end() const
     {
         return &_allocation.Get()[_count];
     }
@@ -789,7 +789,7 @@ public:
     /// <summary>
     /// Performs pop from stack operation (stack grows at the end of the collection).
     /// </summary>
-    FORCE_INLINE T Pop()
+    FORCE_INLINE NODISCARD T Pop()
     {
         T item = MoveTemp(Last());
         RemoveLast();
@@ -799,7 +799,7 @@ public:
     /// <summary>
     /// Peeks items which is at the top of the stack (stack grows at the end of the collection).
     /// </summary>
-    FORCE_INLINE T& Peek()
+    FORCE_INLINE NODISCARD T& Peek()
     {
         ASSERT(_count > 0);
         return _allocation.Get()[_count - 1];
@@ -808,7 +808,7 @@ public:
     /// <summary>
     /// Peeks items which is at the top of the stack (stack grows at the end of the collection).
     /// </summary>
-    FORCE_INLINE const T& Peek() const
+    FORCE_INLINE NODISCARD const T& Peek() const
     {
         ASSERT(_count > 0);
         return _allocation.Get()[_count - 1];
@@ -853,7 +853,7 @@ public:
     /// <param name="index">The found item index, -1 if missing.</param>
     /// <returns>True if found, otherwise false.</returns>
     template<typename ComparableType>
-    FORCE_INLINE bool Find(const ComparableType& item, int32& index) const
+    FORCE_INLINE NODISCARD bool Find(const ComparableType& item, int32& index) const
     {
         index = Find(item);
         return index != -1;
@@ -865,7 +865,7 @@ public:
     /// <param name="item">The item to find.</param>
     /// <returns>The zero-based index of the first occurrence of itm within the entire collection, if found; otherwise, -1.</returns>
     template<typename ComparableType>
-    int32 Find(const ComparableType& item) const
+    NODISCARD int32 Find(const ComparableType& item) const
     {
         if (_count > 0)
         {
@@ -898,7 +898,7 @@ public:
     /// <param name="item">The item to find.</param>
     /// <returns>The zero-based index of the first occurrence of itm within the entire collection, if found; otherwise, -1.</returns>
     template<typename ComparableType>
-    int32 FindLast(const ComparableType& item) const
+    NODISCARD int32 FindLast(const ComparableType& item) const
     {
         if (_count > 0)
         {
@@ -915,7 +915,7 @@ public:
 
 public:
     template<typename OtherT = T, typename OtherAllocationType = AllocationType>
-    bool operator==(const Array<OtherT, OtherAllocationType>& other) const
+    NODISCARD bool operator==(const Array<OtherT, OtherAllocationType>& other) const
     {
         if (_count == other.Count())
         {
@@ -932,7 +932,7 @@ public:
     }
 
     template<typename OtherT = T, typename OtherAllocationType = AllocationType>
-    bool operator!=(const Array<OtherT, OtherAllocationType>& other) const
+    NODISCARD bool operator!=(const Array<OtherT, OtherAllocationType>& other) const
     {
         return !operator==(other);
     }
@@ -1069,7 +1069,7 @@ public:
     /// <summary>
     /// Gets iterator for beginning of the collection.
     /// </summary>
-    FORCE_INLINE Iterator Begin() const
+    FORCE_INLINE NODISCARD Iterator Begin() const
     {
         return Iterator(this, 0);
     }
@@ -1077,7 +1077,7 @@ public:
     /// <summary>
     /// Gets iterator for ending of the collection.
     /// </summary>
-    FORCE_INLINE Iterator End() const
+    FORCE_INLINE NODISCARD Iterator End() const
     {
         return Iterator(this, _count);
     }
