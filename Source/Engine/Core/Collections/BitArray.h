@@ -54,6 +54,16 @@ public:
             _allocation.Allocate(ToItemCapacity(capacity));
     }
 
+    template<typename AllocationContext>
+    explicit BitArray(const int32 capacity, AllocationContext&& context)
+        : _count(0)
+        , _capacity(capacity)
+        , _allocation(Forward<AllocationContext>(context))
+    {
+        if (capacity > 0)
+            _allocation.Allocate(ToItemCapacity(capacity));
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="BitArray"/> class.
     /// </summary>

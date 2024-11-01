@@ -60,6 +60,16 @@ public:
             _allocation.Allocate(capacity);
     }
 
+    template<typename AllocationContext>
+    explicit Array(const int32 capacity, AllocationContext&& context)
+        : _count(0)
+        , _capacity(capacity)
+        , _allocation(Forward<AllocationContext>(context))
+    {
+        if (capacity > 0)
+            _allocation.Allocate(capacity);
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Array"/> class.
     /// </summary>

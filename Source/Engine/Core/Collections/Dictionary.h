@@ -148,6 +148,13 @@ public:
         SetCapacity(capacity);
     }
 
+    template<typename AllocationContext>
+    explicit Dictionary(const int32 capacity, AllocationContext&& context)
+        : _allocation(Forward<AllocationContext>(context))
+    {
+        SetCapacity(capacity);
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Dictionary"/> class.
     /// </summary>

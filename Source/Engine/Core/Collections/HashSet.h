@@ -129,6 +129,13 @@ public:
         SetCapacity(capacity);
     }
 
+    template<typename AllocationContext>
+    explicit HashSet(const int32 capacity, AllocationContext&& context)
+        : _allocation(Forward<AllocationContext>(context))
+    {
+        SetCapacity(capacity);
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="HashSet"/> class.
     /// </summary>
