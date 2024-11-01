@@ -22,9 +22,9 @@ namespace THelpers
 	struct TIsTriviallyDestructibleImpl<T, false>
 	{
 #if defined(__clang__) && __clang_major__ >= 15
-        enum { Value = __is_trivially_destructible(T) };
+		enum { Value = __is_trivially_destructible(T) };
 #else
-        enum { Value = __has_trivial_destructor(T) };
+		enum { Value = __has_trivial_destructor(T) };
 #endif
 	};
 }
@@ -96,7 +96,7 @@ struct TOr<>
 template<typename Type>
 struct TNot
 {
-    enum { Value = !Type::Value };
+	enum { Value = !Type::Value };
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -200,18 +200,18 @@ template<typename T> struct TAddConst { typedef const T Type; };
 
 namespace THelpers
 {
-    template<typename T>
-    struct TTtypeIdentity { using Type = T; };
+	template<typename T>
+	struct TTtypeIdentity { using Type = T; };
 
-    template<typename T>
-    auto TTryAddLValueReference(int) -> TTtypeIdentity<T&>;
-    template <typename T>
-    auto TTryAddLValueReference(...) -> TTtypeIdentity<T>;
+	template<typename T>
+	auto TTryAddLValueReference(int) -> TTtypeIdentity<T&>;
+	template <typename T>
+	auto TTryAddLValueReference(...) -> TTtypeIdentity<T>;
 
-    template<typename T>
-    auto TTryAddRValueReference(int) -> TTtypeIdentity<T&&>;
-    template<typename T>
-    auto TTryAddRValueReference(...) -> TTtypeIdentity<T>;
+	template<typename T>
+	auto TTryAddRValueReference(int) -> TTtypeIdentity<T&&>;
+	template<typename T>
+	auto TTryAddRValueReference(...) -> TTtypeIdentity<T>;
 }
  
 template<typename T>
@@ -242,9 +242,9 @@ template<typename T>
 struct TIsTriviallyCopyConstructible
 {
 #if defined(__clang__) && __clang_major__ >= 15
-    enum { Value = TOrValue<__is_trivially_copyable(T), TIsPODType<T>>::Value };
+	enum { Value = TOrValue<__is_trivially_copyable(T), TIsPODType<T>>::Value };
 #else
-    enum { Value = TOrValue<__has_trivial_copy(T), TIsPODType<T>>::Value };
+	enum { Value = TOrValue<__has_trivial_copy(T), TIsPODType<T>>::Value };
 #endif
 };
 
@@ -274,9 +274,9 @@ template<typename T>
 struct TIsTriviallyCopyAssignable
 {
 #if defined(__clang__) && __clang_major__ >= 15
-    enum { Value = TOrValue<__is_trivially_assignable(T, const T), TIsPODType<T>>::Value };
+	enum { Value = TOrValue<__is_trivially_assignable(T, const T), TIsPODType<T>>::Value };
 #else
-    enum { Value = TOrValue<__has_trivial_assign(T), TIsPODType<T>>::Value };
+	enum { Value = TOrValue<__has_trivial_assign(T), TIsPODType<T>>::Value };
 #endif
 };
 
@@ -295,7 +295,7 @@ template<typename T> struct TAreTypesEqual<T, T>       { enum { Value = true }; 
 template<typename T>
 inline typename TRemoveReference<T>::Type&& MoveTemp(T&& obj)
 {
-    return (typename TRemoveReference<T>::Type&&)obj;
+	return (typename TRemoveReference<T>::Type&&)obj;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -303,9 +303,9 @@ inline typename TRemoveReference<T>::Type&& MoveTemp(T&& obj)
 template<typename T>
 inline void Swap(T& a, T& b) noexcept
 {
-    T tmp = MoveTemp(a);
-    a = MoveTemp(b);
-    b = MoveTemp(tmp);
+	T tmp = MoveTemp(a);
+	a = MoveTemp(b);
+	b = MoveTemp(tmp);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -313,13 +313,13 @@ inline void Swap(T& a, T& b) noexcept
 template<typename T>
 inline T&& Forward(typename TRemoveReference<T>::Type& t) noexcept
 {
-    return static_cast<T&&>(t);
+	return static_cast<T&&>(t);
 }
 
 template<typename T>
 inline T&& Forward(typename TRemoveReference<T>::Type&& t) noexcept
 {
-    return static_cast<T&&>(t);
+	return static_cast<T&&>(t);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -330,13 +330,13 @@ struct TStaticIf;
 template<typename TrueResult, typename FalseResult>
 struct TStaticIf<true, TrueResult, FalseResult>
 {
-    typedef TrueResult Value;
+	typedef TrueResult Value;
 };
 
 template<typename TrueResult, typename FalseResult>
 struct TStaticIf<false, TrueResult, FalseResult>
 {
-    typedef FalseResult Value;
+	typedef FalseResult Value;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -344,13 +344,13 @@ struct TStaticIf<false, TrueResult, FalseResult>
 template<typename T>
 struct TRemovePointer
 {
-    typedef T Type;
+	typedef T Type;
 };
 
 template<typename T>
 struct TRemovePointer<T*>
 {
-    typedef typename TRemovePointer<T>::Type Type;
+	typedef typename TRemovePointer<T>::Type Type;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -363,7 +363,7 @@ struct TEnableIf;
 template<typename Result>
 struct TEnableIf<true, Result>
 {
-    typedef Result Type;
+	typedef Result Type;
 };
 
 template<typename Result>
@@ -377,12 +377,12 @@ struct TEnableIf<false, Result>
 template<typename T>
 inline typename TEnableIf<TAreTypesEqual<T, unsigned int>::Value, T>::Type ReverseBits(T bits)
 {
-    bits = (bits << 16) | (bits >> 16);
-    bits = ((bits & 0x00ff00ff) << 8) | ((bits & 0xff00ff00) >> 8);
-    bits = ((bits & 0x0f0f0f0f) << 4) | ((bits & 0xf0f0f0f0) >> 4);
-    bits = ((bits & 0x33333333) << 2) | ((bits & 0xcccccccc) >> 2);
-    bits = ((bits & 0x55555555) << 1) | ((bits & 0xaaaaaaaa) >> 1);
-    return bits;
+	bits = (bits << 16) | (bits >> 16);
+	bits = ((bits & 0x00ff00ff) << 8) | ((bits & 0xff00ff00) >> 8);
+	bits = ((bits & 0x0f0f0f0f) << 4) | ((bits & 0xf0f0f0f0) >> 4);
+	bits = ((bits & 0x33333333) << 2) | ((bits & 0xcccccccc) >> 2);
+	bits = ((bits & 0x55555555) << 1) | ((bits & 0xaaaaaaaa) >> 1);
+	return bits;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -392,15 +392,15 @@ inline typename TEnableIf<TAreTypesEqual<T, unsigned int>::Value, T>::Type Rever
 template<typename T, typename Arg>
 struct TIsBitwiseConstructible
 {
-    static_assert(!TIsReferenceType<T>::Value && !TIsReferenceType<Arg>::Value,"TIsBitwiseConstructible cannot use reference types");
-    static_assert(TAreTypesEqual<T, typename TRemoveCV<T>::Type>::Value && TAreTypesEqual<Arg, typename TRemoveCV<Arg>::Type>::Value, "TIsBitwiseConstructible cannot use qualified types");
-    enum { Value = false };
+	static_assert(!TIsReferenceType<T>::Value && !TIsReferenceType<Arg>::Value,"TIsBitwiseConstructible cannot use reference types");
+	static_assert(TAreTypesEqual<T, typename TRemoveCV<T>::Type>::Value && TAreTypesEqual<Arg, typename TRemoveCV<Arg>::Type>::Value, "TIsBitwiseConstructible cannot use qualified types");
+	enum { Value = false };
 };
 
 template<typename T>
 struct TIsBitwiseConstructible<T, T>
 {
-    enum { Value = TIsTriviallyCopyConstructible<T>::Value };
+	enum { Value = TIsTriviallyCopyConstructible<T>::Value };
 };
 
 template<typename T, typename U>
@@ -411,7 +411,7 @@ struct TIsBitwiseConstructible<const T, U> : TIsBitwiseConstructible<T, U>
 template<typename T>
 struct TIsBitwiseConstructible<const T*, T*>
 {
-    enum { Value = true };
+	enum { Value = true };
 };
 
 template<> struct TIsBitwiseConstructible<uint8, int8>   { enum { Value = true }; };
