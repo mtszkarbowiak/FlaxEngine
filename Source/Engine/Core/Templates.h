@@ -196,6 +196,23 @@ template<typename T> struct TAddConst { typedef const T Type; };
 
 ////////////////////////////////////////////////////////////////////////////////////
 
+template<typename T, typename...>
+struct TIsAnyOf;
+
+template<typename T, typename First, typename... Rest>
+struct TIsAnyOf<T, First, Rest...>
+{
+    enum { Value = TIsTheSame<T, First>::Value || TIsAnyOf<T, Rest...>::Value };
+};
+
+template<typename T>
+struct TIsAnyOf<T>
+{
+    enum { Value = false };
+};
+
+////////////////////////////////////////////////////////////////////////////////////
+
 // Creates a lvalue or rvalue reference type.
 
 namespace THelpers
@@ -384,6 +401,14 @@ inline typename TEnableIf<TAreTypesEqual<T, unsigned int>::Value, T>::Type Rever
 	bits = ((bits & 0x55555555) << 1) | ((bits & 0xaaaaaaaa) >> 1);
 	return bits;
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+
+template<typename T>
+struct TIsIntegral
+{
+    enum { Value = TIsAnyOf<T, int8, uint8, int16, uint16, int32, uint32, int64, uint64>::Value };
+};
 
 ////////////////////////////////////////////////////////////////////////////////////
 
