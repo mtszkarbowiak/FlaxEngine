@@ -384,6 +384,16 @@ public:
     }
 
     /// <summary>
+    /// Clear the collection and free the memory, setting the capacity to zero.
+    /// </summary>
+    void ClearAndFree()
+    {
+        Clear();
+        _allocation.Free();
+        _capacity = 0;
+    }
+
+    /// <summary>
     /// Clears the collection without changing its capacity. Deletes all not null items.
     /// Note: collection must contain pointers to the objects that have public destructor and be allocated using New method.
     /// </summary>

@@ -246,6 +246,16 @@ public:
     }
 
     /// <summary>
+    /// Clear the collection and free the memory, changing its capacity to 0.
+    /// </summary>
+    FORCE_INLINE void ClearAndFree()
+    {
+        _count = 0;
+        _capacity = 0;
+        _allocation.Free();
+    }
+
+    /// <summary>
     /// Changes the capacity of the collection.
     /// </summary>
     /// <param name="capacity">The new capacity.</param>
