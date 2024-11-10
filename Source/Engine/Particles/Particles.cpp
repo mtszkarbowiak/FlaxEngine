@@ -1212,10 +1212,10 @@ void ParticleManagerService::Dispose()
     }
     CleanupGPUParticlesSorting();
 #endif
-    ParticlesDrawCPU::SortingKeys[0].SetCapacity(0);
-    ParticlesDrawCPU::SortingKeys[1].SetCapacity(0);
-    ParticlesDrawCPU::SortingIndices.SetCapacity(0);
-    ParticlesDrawCPU::SortedIndices.SetCapacity(0);
+    ParticlesDrawCPU::SortingKeys[0].ClearAndFree();
+    ParticlesDrawCPU::SortingKeys[1].ClearAndFree();
+    ParticlesDrawCPU::SortingIndices.ClearAndFree();
+    ParticlesDrawCPU::SortedIndices.ClearAndFree();
 
     PoolLocker.Lock();
     for (auto i = Pool.Begin(); i.IsNotEnd(); ++i)

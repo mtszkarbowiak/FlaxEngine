@@ -34,7 +34,7 @@ bool VisjectMeta::Load(ReadStream* stream, bool loadData)
         }
         else
         {
-            e.Data.SetCapacity(0);
+            e.Data.ClearAndFree();
             stream->SetPosition(stream->GetPosition() + dataSize);
         }
     }

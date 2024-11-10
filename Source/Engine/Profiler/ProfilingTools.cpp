@@ -209,10 +209,9 @@ void ProfilingToolsService::Update()
 
 void ProfilingToolsService::Dispose()
 {
-    ProfilingTools::EventsCPU.Clear();
-    ProfilingTools::EventsCPU.SetCapacity(0);
-    ProfilingTools::EventsGPU.SetCapacity(0);
-    ProfilingTools::EventsNetwork.SetCapacity(0);
+    ProfilingTools::EventsCPU.ClearAndFree();
+    ProfilingTools::EventsGPU.ClearAndFree();
+    ProfilingTools::EventsNetwork.ClearAndFree();
 }
 
 bool ProfilingTools::GetEnabled()

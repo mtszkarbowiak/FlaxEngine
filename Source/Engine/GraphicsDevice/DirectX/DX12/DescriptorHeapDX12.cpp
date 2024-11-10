@@ -173,7 +173,7 @@ void DescriptorHeapPoolDX12::ReleaseGPU()
 
 void DescriptorHeapWithSlotsDX12::OnReleaseGPU()
 {
-    _usage.SetCapacity(0, false);
+    _usage.ClearAndFree();
     DX_SAFE_RELEASE_CHECK(_heap, 0);
     _descriptorsCount = 0;
 }
