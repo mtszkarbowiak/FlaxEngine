@@ -156,7 +156,8 @@ bool ImportIES::Load(const byte* buffer)
 
     {
         float minValue = MIN_float;
-        _vAngles.SetCapacity(vAnglesCount, false);
+        _vAngles.Clear();
+        _vAngles.EnsureCapacity(vAnglesCount);
         for (int32 y = 0; y < vAnglesCount; y++)
         {
             PARSE_FLOAT(value);
@@ -169,7 +170,8 @@ bool ImportIES::Load(const byte* buffer)
 
     {
         float minValue = MIN_float;
-        _hAngles.SetCapacity(hAnglesCount, false);
+        _hAngles.Clear();
+        _hAngles.EnsureCapacity(hAnglesCount);
         for (int32 x = 0; x < hAnglesCount; x++)
         {
             PARSE_FLOAT(value);
@@ -180,7 +182,8 @@ bool ImportIES::Load(const byte* buffer)
         }
     }
 
-    _candalaValues.SetCapacity(hAnglesCount * vAnglesCount, false);
+    _candalaValues.Clear();
+    _candalaValues.EnsureCapacity(hAnglesCount * vAnglesCount);
     for (int32 y = 0; y < hAnglesCount; y++)
     {
         for (int32 x = 0; x < vAnglesCount; x++)

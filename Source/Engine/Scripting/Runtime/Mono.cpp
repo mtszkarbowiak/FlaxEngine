@@ -302,7 +302,7 @@ void OnGCAllocation(MonoProfiler* profiler, MonoObject* obj)
         if (details)
         {
             StackWalkDataResult stackTrace;
-            stackTrace.Buffer.SetCapacity(1024);
+            stackTrace.Buffer.EnsureCapacity(1024);
             mono_stack_walk(&OnStackWalk, &stackTrace);
 
             const auto msg = String::Format(TEXT("GC new: {0}.{1} ({2} bytes). Stack Trace:\n{3}"), String(name_space), String(name), size, stackTrace.Buffer.ToStringView());

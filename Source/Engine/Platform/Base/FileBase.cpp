@@ -312,7 +312,7 @@ bool FileBase::WriteAllText(const StringView& path, const Char* data, int32 leng
     case Encoding::UTF8:
     {
         Array<byte> tmp;
-        tmp.SetCapacity(length);
+        tmp.EnsureCapacity(length);
 
         for (int32 i = 0; i < length; i++)
         {
