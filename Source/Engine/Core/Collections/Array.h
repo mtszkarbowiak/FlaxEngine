@@ -412,13 +412,13 @@ public:
     }
 
 
-// private:
+private:
     /// <summary>
     /// Changes the capacity of the collection.
     /// </summary>
     /// <param name="capacity">The new capacity.</param>
     /// <param name="preserveContents">True if preserve collection data when changing its size, otherwise collection after resize will be empty.</param>
-    DEPRECATED() void SetCapacity(const int32 capacity, const bool preserveContents = true) //TODO Remove this method.
+    void SetCapacity(const int32 capacity, const bool preserveContents = true) //TODO Remove this method.
     {
         if (capacity == _capacity)
             return;

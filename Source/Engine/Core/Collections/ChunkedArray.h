@@ -257,7 +257,7 @@ public:
         if (chunk == nullptr)
         {
             chunk = New<Chunk>();
-            chunk->SetCapacity(ChunkSize);
+            chunk->EnsureCapacity(ChunkSize);
             _chunks.Add(chunk);
         }
 
@@ -288,7 +288,7 @@ public:
         if (chunk == nullptr)
         {
             chunk = New<Chunk>();
-            chunk->SetCapacity(ChunkSize);
+            chunk->EnsureCapacity(ChunkSize);
             _chunks.Add(chunk);
         }
 
@@ -363,7 +363,7 @@ public:
         while (_chunks.Count() < minChunks)
         {
             auto chunk = New<Chunk>();
-            chunk->SetCapacity(ChunkSize);
+            chunk->EnsureCapacity(ChunkSize);
             _chunks.Add(chunk);
         }
     }
@@ -400,7 +400,7 @@ public:
                 auto& chunk = _chunks[chunkIndex];
 
                 // Insert some items to this chunk if can
-                const int32 spaceLeft = chunk->Capacity() - chunk->Count();
+                const int32 spaceLeft = ChunkSize - chunk->Count();
                 int32 itemsToAdd = Math::Min(itemsReaming, spaceLeft);
                 chunk->Resize(chunk->Count() + itemsToAdd);
                 _count += itemsToAdd;
