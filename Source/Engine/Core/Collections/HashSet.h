@@ -406,12 +406,13 @@ public:
         Clear();
     }
 
+private:
     /// <summary>
     /// Changes capacity of the collection
     /// </summary>
     /// <param name="capacity">New capacity</param>
     /// <param name="preserveContents">Enable/disable preserving collection contents during resizing</param>
-    void SetCapacity(int32 capacity, const bool preserveContents = true)
+    void SetCapacity(int32 capacity, const bool preserveContents = true) //TODO Remove this method.
     {
         if (capacity == Capacity())
             return;
@@ -465,6 +466,7 @@ public:
         }
     }
 
+public:
     /// <summary>
     /// Ensures that collection has given capacity.
     /// </summary>

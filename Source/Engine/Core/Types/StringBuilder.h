@@ -43,13 +43,15 @@ public:
         return _data.Capacity();
     }
 
+
     /// <summary>
-    /// Sets the buffer capacity.
+    /// Sets the buffer minimal capacity.
     /// </summary>
     /// <param name="capacity">Capacity to set</param>
-    FORCE_INLINE void SetCapacity(const int32 capacity)
+    /// <param name="preserveContents">True if should preserve contents</param>
+    FORCE_INLINE void EnsureCapacity(const int32 capacity, const bool preserveContents = true)
     {
-        _data.SetCapacity(capacity);
+        _data.EnsureCapacity(capacity, preserveContents);
     }
 
     /// <summary>

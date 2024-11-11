@@ -411,12 +411,14 @@ public:
         Clear();
     }
 
+
+// private:
     /// <summary>
     /// Changes the capacity of the collection.
     /// </summary>
     /// <param name="capacity">The new capacity.</param>
     /// <param name="preserveContents">True if preserve collection data when changing its size, otherwise collection after resize will be empty.</param>
-    void SetCapacity(const int32 capacity, const bool preserveContents = true)
+    DEPRECATED() void SetCapacity(const int32 capacity, const bool preserveContents = true) //TODO Remove this method.
     {
         if (capacity == _capacity)
             return;
@@ -425,8 +427,11 @@ public:
         _allocation.Relocate(capacity, _count, count);
         _capacity = capacity;
         _count = count;
+
     }
 
+
+public:
     /// <summary>
     /// Resizes the collection to the specified size. If the size is equal or less to the current capacity no additional memory reallocation in performed.
     /// </summary>

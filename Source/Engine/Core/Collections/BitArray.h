@@ -260,7 +260,7 @@ public:
     /// </summary>
     /// <param name="capacity">The new capacity.</param>
     /// <param name="preserveContents">True if preserve collection data when changing its size, otherwise collection after resize will be empty.</param>
-    void SetCapacity(const int32 capacity, const bool preserveContents = true)
+    void SetCapacity(const int32 capacity, const bool preserveContents = true) //TODO Remove this method.
     {
         if (capacity == _capacity)
             return;

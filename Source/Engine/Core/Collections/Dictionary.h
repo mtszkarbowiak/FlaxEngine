@@ -145,7 +145,7 @@ public:
     /// <param name="capacity">The initial capacity.</param>
     explicit Dictionary(const int32 capacity)
     {
-        SetCapacity(capacity);
+        SetCapacity(capacity); 
     }
 
     /// <summary>
@@ -544,7 +544,7 @@ public:
     /// </summary>
     /// <param name="capacity">The new capacity.</param>
     /// <param name="preserveContents">Enables preserving collection contents during resizing.</param>
-    void SetCapacity(int32 capacity, const bool preserveContents = true)
+    void SetCapacity(int32 capacity, const bool preserveContents = true) //TODO Remove this method.
     {
         if (capacity == Capacity())
             return;
