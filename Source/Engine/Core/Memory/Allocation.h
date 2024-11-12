@@ -4,6 +4,7 @@
 
 #include "Memory.h"
 #include "Engine/Core/Core.h"
+#include "Engine/Core/Memory/AllocMath.h"
 
 /// <summary>
 /// The memory allocation policy that uses inlined memory of the fixed size (no resize support, does not use heap allocations at all).
@@ -114,17 +115,12 @@ public:
             }
             else
             {
-                // Round up to the next power of 2 and multiply by 2 (http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2)
-                capacity--;
-                capacity |= capacity >> 1;
-                capacity |= capacity >> 2;
-                capacity |= capacity >> 4;
-                capacity |= capacity >> 8;
-                capacity |= capacity >> 16;
-                uint64 capacity64 = (uint64)(capacity + 1) * 2;
+                ROUND_UP_TO_POWER_OF_TWO_32(capacity);
+
+                uint64 capacity64 = static_cast<uint64>(capacity) * 2;
                 if (capacity64 > MAX_int32)
                     capacity64 = MAX_int32;
-                capacity = (int32)capacity64;
+                capacity = static_cast<int32>(capacity64);
             }
             return capacity;
         }
