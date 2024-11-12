@@ -335,19 +335,20 @@ void MCore::UnloadEngine()
 void MCore::ReloadScriptingAssemblyLoadContext()
 {
     // Clear any cached class attributes (see https://github.com/FlaxEngine/FlaxEngine/issues/1108)
-    for (auto e : CachedClassHandles)
+    for (auto e = CachedClassHandles.Begin(); e.IsNotEnd(); ++e)
     {
-        e.Value->_hasCachedAttributes = false;
-        e.Value->_attributes.Clear();
+        e->Value->_hasCachedAttributes = false;
+        e->Value->_attributes.Clear();
     }
-    for (auto e : CachedAssemblyHandles)
+    for (auto e = CachedAssemblyHandles.Begin(); e.IsNotEnd(); ++e)
     {
-        MAssembly* a = e.Value;
+        MAssembly* a = e->Value;
         if (!a->IsLoaded() || !a->_hasCachedClasses)
             continue;
-        for (auto q : a->GetClasses())
+
+        for (auto q = a->GetClasses().Begin(); q.IsNotEnd(); ++q)
         {
-            MClass* c = q.Value;
+            MClass* c = q->Value;
             c->_hasCachedAttributes = false;
             c->_attributes.Clear();
             if (c->_hasCachedMethods)
