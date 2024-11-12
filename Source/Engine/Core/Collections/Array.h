@@ -6,6 +6,7 @@
 #include "Engine/Platform/Platform.h"
 #include "Engine/Core/Memory/Memory.h"
 #include "Engine/Core/Memory/Allocation.h"
+#include "Engine/Core/Collections/CollectionUtils.h"
 
 /// <summary>
 /// Template for dynamic array with variable capacity.
@@ -24,21 +25,6 @@ private:
     int32 _count;
     int32 _capacity;
     AllocationData _allocation;
-
-    //TODO(mtszkarbowiak) Stage 2. - Unify ALL move-to-empty methods in all collections.
-    //TODO(mtszkabrowiak) Stage 3. - Replace all move-to-empty methods with a single one in all collections.
-    FORCE_INLINE static void MoveToEmpty(AllocationData& to, AllocationData& from, const int32 fromCount, const int32 fromCapacity)
-    {
-        if IF_CONSTEXPR (AllocationType::HasSwap)
-            to.Swap(from);
-        else
-        {
-            to.Allocate(fromCapacity);
-            Memory::MoveItems(to.Get(), from.Get(), fromCount);
-            Memory::DestructItems(from.Get(), fromCount);
-            from.Free();
-        }
-    }
 
 public:
     /// <summary>
@@ -149,7 +135,8 @@ public:
         _capacity = other._capacity;
         other._count = 0;
         other._capacity = 0;
-        MoveToEmpty(_allocation, other._allocation, _count, _capacity);
+
+        CollectionUtils::MoveToEmpty<T, AllocationType>(_allocation, other._allocation, _count, _capacity);
     }
 
     /// <summary>
@@ -206,7 +193,8 @@ public:
             _capacity = other._capacity;
             other._count = 0;
             other._capacity = 0;
-            MoveToEmpty(_allocation, other._allocation, _count, _capacity);
+
+            CollectionUtils::MoveToEmpty<T, AllocationType>(_allocation, other._allocation, _count, _capacity);
         }
         return *this;
     }

@@ -7,6 +7,7 @@
 #include "Engine/Core/Collections/BucketState.h"
 #include "Engine/Core/Collections/HashFunctions.h"
 #include "Engine/Core/Collections/Config.h"
+#include "Engine/Core/Collections/CollectionUtils.h"
 
 /// <summary>
 /// Template for unordered dictionary with mapped key with value pairs.
@@ -208,7 +209,7 @@ public:
         other._elementsCount = 0;
         other._deletedCount = 0;
         other._size = 0;
-        MoveToEmpty(_allocation, other._allocation, _size);
+        CollectionUtils::MoveToEmpty<Bucket, AllocationType>(_allocation, other._allocation, _size, _size);
     }
 
     /// <summary>
@@ -249,7 +250,7 @@ public:
             other._elementsCount = 0;
             other._deletedCount = 0;
             other._size = 0;
-            MoveToEmpty(_allocation, other._allocation, _size);
+            CollectionUtils::MoveToEmpty<Bucket, AllocationType>(_allocation, other._allocation, _size, _size);
         }
         return *this;
     }
@@ -598,7 +599,7 @@ public:
             return;
         ASSERT(capacity >= 0);
         AllocationData oldAllocation;
-        MoveToEmpty(oldAllocation, _allocation, _size);
+        CollectionUtils::MoveToEmpty<Bucket, AllocationType>(oldAllocation, _allocation, _size, _size);
         const int32 oldSize = _size;
         const int32 oldElementsCount = _elementsCount;
         _deletedCount = _elementsCount = 0;
@@ -1018,7 +1019,7 @@ private:
         {
             // Rebuild entire table completely
             AllocationData oldAllocation;
-            MoveToEmpty(oldAllocation, _allocation, _size);
+            CollectionUtils::MoveToEmpty<Bucket, AllocationType>(oldAllocation, _allocation, _size, _size);
             _allocation.Allocate(_size);
             Bucket* data = _allocation.Get();
             for (int32 i = 0; i < _size; i++)

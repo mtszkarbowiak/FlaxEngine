@@ -7,6 +7,7 @@
 #include "Engine/Core/Collections/BucketState.h"
 #include "Engine/Core/Collections/HashFunctions.h"
 #include "Engine/Core/Collections/Config.h"
+#include "Engine/Core/Collections/CollectionUtils.h"
 
 /// <summary>
 /// Template for unordered set of values (without duplicates with O(1) lookup access).
@@ -138,20 +139,6 @@ private:
     int32 _size = 0;
     AllocationData _allocation;
 
-    //TODO(mtszkarbowiak) Stage 2. - Unify ALL move-to-empty methods in all collections.
-    FORCE_INLINE static void MoveToEmpty(AllocationData& to, AllocationData& from, const int32 fromSize)
-    {
-        if IF_CONSTEXPR (AllocationType::HasSwap)
-            to.Swap(from);
-        else
-        {
-            to.Allocate(fromSize);
-            Memory::MoveItems(to.Get(), from.Get(), fromSize);
-            Memory::DestructItems(from.Get(), fromSize);
-            from.Free();
-        }
-    }
-
 public:
     /// <summary>
     /// Initializes a new instance of the <see cref="HashSet"/> class.
@@ -181,7 +168,7 @@ public:
         other._elementsCount = 0;
         other._deletedCount = 0;
         other._size = 0;
-        MoveToEmpty(_allocation, other._allocation, _size);
+        CollectionUtils::MoveToEmpty<Bucket, AllocationType>(_allocation, other._allocation, _size, _size);
     }
 
     /// <summary>
@@ -222,7 +209,7 @@ public:
             other._elementsCount = 0;
             other._deletedCount = 0;
             other._size = 0;
-            MoveToEmpty(_allocation, other._allocation, _size);
+            CollectionUtils::MoveToEmpty<Bucket, AllocationType>(_allocation, other._allocation, _size, _size);
         }
         return *this;
     }
@@ -458,7 +445,7 @@ private:
             return;
         ASSERT(capacity >= 0);
         AllocationData oldAllocation;
-        MoveToEmpty(oldAllocation, _allocation, _size);
+        CollectionUtils::MoveToEmpty<Bucket, AllocationType>(oldAllocation, _allocation, _size, _size);
         const int32 oldSize = _size;
         const int32 oldElementsCount = _elementsCount;
         _deletedCount = _elementsCount = 0;
@@ -798,7 +785,7 @@ private:
         {
             // Rebuild entire table completely
             AllocationData oldAllocation;
-            MoveToEmpty(oldAllocation, _allocation, _size);
+            CollectionUtils::MoveToEmpty<Bucket, AllocationType>(oldAllocation, _allocation, _size, _size);
             _allocation.Allocate(_size);
             Bucket* data = _allocation.Get();
             for (int32 i = 0; i < _size; ++i)
