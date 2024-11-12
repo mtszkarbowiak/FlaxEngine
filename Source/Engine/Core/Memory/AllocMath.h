@@ -6,8 +6,25 @@
 
 /// <summary>
 /// Rounds up the given number to the next power of two.
+/// This version is for 8-bit numbers.
+/// </summary>
+/// <param name="n"> Reference to the number to round up.</param>
+/// <remarks>
+/// Macros are used instead of functions to manually inline the code.
+/// Be very careful! Binding with non-pure expressions can cause unexpected behavior (e.g. ROUND_UP_TO_POWER_OF_TWO_16(x++)).
+/// </remarks>
+#define ROUND_UP_TO_POWER_OF_TWO_8(n) static_assert(sizeof(n) == 2, "The number must be 16-bit."); \
+    --(n);            \
+    (n) |= (n) >> 1;  \
+    (n) |= (n) >> 2;  \
+    (n) |= (n) >> 4;  \
+    ++(n);
+
+/// <summary>
+/// Rounds up the given number to the next power of two.
 /// This version is for 16-bit numbers.
 /// </summary>
+/// <param name="n"> Reference to the number to round up.</param>
 /// <remarks>
 /// Macros are used instead of functions to manually inline the code.
 /// Be very careful! Binding with non-pure expressions can cause unexpected behavior (e.g. ROUND_UP_TO_POWER_OF_TWO_16(x++)).
@@ -24,6 +41,7 @@
 /// Rounds up the given number to the next power of two.
 /// This version is for 32-bit numbers.
 /// </summary>
+/// <param name="n"> Reference to the number to round up.</param>
 /// <remarks>
 /// Macros are used instead of functions to manually inline the code.
 /// Be very careful! Binding with non-pure expressions can cause unexpected behavior (e.g. ROUND_UP_TO_POWER_OF_TWO_16(x++)).
@@ -41,6 +59,7 @@
 /// Rounds up the given number to the next power of two.
 /// This version is for 64-bit numbers.
 /// </summary>
+/// <param name="n"> Reference to the number to round up.</param>
 /// <remarks>
 /// Macros are used instead of functions to manually inline the code.
 /// Be very careful! Binding with non-pure expressions can cause unexpected behavior (e.g. ROUND_UP_TO_POWER_OF_TWO_16(x++)).

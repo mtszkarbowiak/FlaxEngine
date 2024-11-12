@@ -372,13 +372,8 @@ private:
         int32 capacity = count + slack;
         {
             // Round up to the next power of 2 and multiply by 2
-            capacity--;
-            capacity |= capacity >> 1;
-            capacity |= capacity >> 2;
-            capacity |= capacity >> 4;
-            capacity |= capacity >> 8;
-            capacity |= capacity >> 16;
-            capacity = (capacity + 1) * 2;
+            ROUND_UP_TO_POWER_OF_TWO_32(capacity);
+            capacity *= 2;
         }
         return capacity;
     }
