@@ -127,10 +127,10 @@ public:
 
         FORCE_INLINE void Allocate(const int32 capacity)
         {
-#if  ENABLE_ASSERTION_LOW_LAYERS
-            ASSERT(!_data);
-#endif
+            ASSERT_LOW_LAYER(!_data);
+
             _data = static_cast<T*>(Allocator::Allocate(capacity * sizeof(T)));
+
 #if !BUILD_RELEASE
             if (!_data)
                 OUT_OF_MEMORY;
