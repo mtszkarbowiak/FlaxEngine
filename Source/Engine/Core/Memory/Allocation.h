@@ -15,6 +15,7 @@ class FixedAllocation
 public:
     enum { HasSwap = false };
 
+    //TODO(mtszkarbowiak) Stage 4. - Use move semantics for all allocations.
     template<typename T>
     class alignas(sizeof(void*)) Data
     {
@@ -40,12 +41,14 @@ public:
             return reinterpret_cast<const T*>(_data);
         }
 
+        //TODO(mtszkarbowiak) Stage 5. - Move growing logic to the collections. Introduce MIN and MAX capacity.
         FORCE_INLINE int32 CalculateCapacityGrow(int32 capacity, const int32 minCapacity) const
         {
             ASSERT(minCapacity <= Capacity);
             return Capacity;
         }
 
+        //TODO(mtskarbowiak) Stage 6. - Return allocation result.
         FORCE_INLINE void Allocate(const int32 capacity)
         {
 #if ENABLE_ASSERTION_LOW_LAYERS
@@ -64,6 +67,7 @@ public:
         {
         }
 
+        //TODO(mtszkarbowiak) Stage 4.2. - Replace direct swap with move semantics.
         void Swap(Data& other)
         {
             // Not supported
@@ -79,6 +83,7 @@ class HeapAllocation
 public:
     enum { HasSwap = true };
 
+    //TODO(mtszkarbowiak) Stage 4. - Use move semantics for all allocations.
     template<typename T>
     class Data
     {
@@ -105,6 +110,7 @@ public:
             return _data;
         }
 
+        //TODO(mtszkarbowiak) Stage 5. - Move growing logic to the collections. Introduce MIN and MAX capacity.
         FORCE_INLINE int32 CalculateCapacityGrow(int32 capacity, const int32 minCapacity) const
         {
             if (capacity < minCapacity)
@@ -125,6 +131,7 @@ public:
             return capacity;
         }
 
+        //TODO(mtskarbowiak) Stage 6. - Return allocation result.
         FORCE_INLINE void Allocate(const int32 capacity)
         {
             ASSERT_LOW_LAYER(!_data);
@@ -162,6 +169,7 @@ public:
             _data = nullptr;
         }
 
+        //TODO(mtszkarbowiak) Stage 4.2. - Replace direct swap with move semantics.
         FORCE_INLINE void Swap(Data& other)
         {
             ::Swap(_data, other._data);
@@ -178,6 +186,8 @@ class InlinedAllocation
 public:
     enum { HasSwap = false };
 
+    //TODO(mtszkarbowiak) Stage 4. - Use move semantics for all allocations.
+    //TODO(mtszkarbowiak) Stage 4.1. (Optional) - Consider adding polymorphic allocation moves.
     template<typename T>
     class alignas(sizeof(void*)) Data
     {
@@ -207,11 +217,13 @@ public:
             return _useOther ? _other.Get() : reinterpret_cast<const T*>(_data);
         }
 
+        //TODO(mtszkarbowiak) Stage 5. - Move growing logic to the collections. Introduce MIN and MAX capacity.
         FORCE_INLINE int32 CalculateCapacityGrow(int32 capacity, int32 minCapacity) const
         {
             return minCapacity <= Capacity ? Capacity : _other.CalculateCapacityGrow(capacity, minCapacity);
         }
 
+        //TODO(mtskarbowiak) Stage 6. - Return allocation result.
         FORCE_INLINE void Allocate(int32 capacity)
         {
             if (capacity > Capacity)
@@ -268,6 +280,7 @@ public:
             }
         }
 
+        //TODO(mtszkarbowiak) Stage 4.2. - Replace direct swap with move semantics.
         void Swap(Data& other)
         {
             // Not supported

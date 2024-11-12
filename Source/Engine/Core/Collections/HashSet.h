@@ -18,6 +18,7 @@ API_CLASS(InBuild) class HashSet
 {
     friend HashSet;
 public:
+    //TODO(mtszkarbowiak) Stage 1. - Implement move semantics for buckets.
     /// <summary>
     /// Describes single portion of space for the item in a hash map.
     /// </summary>
@@ -87,6 +88,7 @@ private:
     int32 _size = 0;
     AllocationData _allocation;
 
+    //TODO(mtszkarbowiak) Stage 2. - Unify ALL move-to-empty methods in all collections.
     FORCE_INLINE static void MoveToEmpty(AllocationData& to, AllocationData& from, const int32 fromSize)
     {
         if IF_CONSTEXPR (AllocationType::HasSwap)

@@ -25,6 +25,8 @@ private:
     int32 _capacity;
     AllocationData _allocation;
 
+    //TODO(mtszkarbowiak) Stage 2. - Unify ALL move-to-empty methods in all collections.
+    //TODO(mtszkabrowiak) Stage 3. - Replace all move-to-empty methods with a single one in all collections.
     FORCE_INLINE static void MoveToEmpty(AllocationData& to, AllocationData& from, const int32 fromCount, const int32 fromCapacity)
     {
         if IF_CONSTEXPR (AllocationType::HasSwap)
