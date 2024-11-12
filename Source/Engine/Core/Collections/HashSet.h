@@ -32,6 +32,56 @@ public:
     private:
         BucketState _state;
 
+
+    public:
+        Bucket()
+            : _state(BucketState::Empty)
+            // Do not initialize the item
+        {
+        }
+
+        Bucket(Bucket&& other) noexcept
+        {
+            _state = other._state;
+            if (other.IsOccupied())
+            {
+                Memory::MoveItems(&Item, &other.Item, 1);
+                Memory::DestructItems(&other.Item, 1);
+                other._state = BucketState::Empty;
+            }
+        }
+
+        auto operator=(Bucket&& other) noexcept -> Bucket&
+        {
+            if (this != &other)
+            {
+                if (IsOccupied())
+                    Memory::DestructItem(&Item);
+
+                _state = other._state;
+
+                if (other.IsOccupied())
+                {
+                    Memory::MoveItems(&Item, &other.Item, 1);
+                    Memory::DestructItems(&other.Item, 1);
+                    other._state = BucketState::Empty;
+                }
+            }
+            return *this;
+        }
+
+        Bucket(const Bucket& other) = delete;
+
+        auto operator=(const Bucket& other)->Bucket & = delete;
+
+        ~Bucket()
+        {
+            if (_state == BucketState::Occupied)
+                Memory::DestructItem(&Item);
+        }
+
+
+    private:
         FORCE_INLINE void Free()
         {
             if (_state == BucketState::Occupied)
@@ -96,20 +146,8 @@ private:
         else
         {
             to.Allocate(fromSize);
-            Bucket* toData = to.Get();
-            Bucket* fromData = from.Get();
-            for (int32 i = 0; i < fromSize; ++i)
-            {
-                Bucket& fromBucket = fromData[i];
-                if (fromBucket.IsOccupied())
-                {
-                    Bucket& toBucket = toData[i];
-                    Memory::MoveItems(&toBucket.Item, &fromBucket.Item, 1);
-                    toBucket._state = BucketState::Occupied;
-                    Memory::DestructItem(&fromBucket.Item);
-                    fromBucket._state = BucketState::Empty;
-                }
-            }
+            Memory::MoveItems(to.Get(), from.Get(), fromSize);
+            Memory::DestructItems(from.Get(), fromSize);
             from.Free();
         }
     }

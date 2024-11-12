@@ -19,7 +19,6 @@ API_CLASS(InBuild) class Dictionary
 {
     friend Dictionary;
 public:
-    //TODO(mtszkarbowiak) Stage 1. - Implement move semantics for buckets.
     /// <summary>
     /// Describes single portion of space for the key and value pair in a hash map.
     /// </summary>
@@ -34,6 +33,67 @@ public:
 
     private:
         BucketState _state;
+
+    public:
+        Bucket()
+            : _state(BucketState::Empty)
+            // Key and Value are not initialized
+        {
+        }
+
+        Bucket(Bucket&& other) noexcept
+        {
+            _state = other._state;
+            if (other.IsOccupied())
+            {
+                Memory::MoveItems(&Key, &other.Key, 1);
+                Memory::MoveItems(&Value, &other.Value, 1);
+
+                Memory::DestructItems(&other.Key, 1);
+                Memory::DestructItems(&other.Value, 1);
+
+                other._state = BucketState::Empty;
+            }
+        }
+
+        auto operator=(Bucket&& other) noexcept -> Bucket&
+        {
+            if (this != &other)
+            {
+                if (IsOccupied())
+                {
+                    Memory::DestructItem(&Key);
+                    Memory::DestructItem(&Value);
+                }
+
+                _state = other._state;
+
+                if (other.IsOccupied())
+                {
+                    Memory::MoveItems(&Key, &other.Key, 1);
+                    Memory::MoveItems(&Value, &other.Value, 1);
+
+                    Memory::DestructItems(&other.Key, 1);
+                    Memory::DestructItems(&other.Value, 1);
+
+                    other._state = BucketState::Empty;
+                }
+            }
+            return *this;
+        }
+
+        Bucket(const Bucket&) = delete;
+
+        auto operator=(const Bucket&)->Bucket & = delete;
+
+        ~Bucket()
+        {
+            if (IsOccupied())
+            {
+                Memory::DestructItem(&Key);
+                Memory::DestructItem(&Value);
+            }
+        }
 
         FORCE_INLINE void Free()
         {
@@ -76,22 +136,22 @@ public:
             _state = BucketState::Occupied;
         }
 
-        FORCE_INLINE bool IsEmpty() const
+        FORCE_INLINE bool IsEmpty() const //TODO Access directly
         {
             return _state == BucketState::Empty;
         }
 
-        FORCE_INLINE bool IsDeleted() const
+        FORCE_INLINE bool IsDeleted() const //TODO Access directly 
         {
             return _state == BucketState::Deleted;
         }
 
-        FORCE_INLINE bool IsOccupied() const
+        FORCE_INLINE bool IsOccupied() const //TODO Access directly
         {
             return _state == BucketState::Occupied;
         }
 
-        FORCE_INLINE bool IsNotOccupied() const
+        FORCE_INLINE bool IsNotOccupied() const //TODO Access directly
         {
             return _state != BucketState::Occupied;
         }
@@ -113,22 +173,8 @@ private:
         else
         {
             to.Allocate(fromSize);
-            Bucket* toData = to.Get();
-            Bucket* fromData = from.Get();
-            for (int32 i = 0; i < fromSize; i++)
-            {
-                Bucket& fromBucket = fromData[i];
-                if (fromBucket.IsOccupied())
-                {
-                    Bucket& toBucket = toData[i];
-                    Memory::MoveItems(&toBucket.Key, &fromBucket.Key, 1);
-                    Memory::MoveItems(&toBucket.Value, &fromBucket.Value, 1);
-                    toBucket._state = BucketState::Occupied;
-                    Memory::DestructItem(&fromBucket.Key);
-                    Memory::DestructItem(&fromBucket.Value);
-                    fromBucket._state = BucketState::Empty;
-                }
-            }
+            Memory::MoveItems(to.Get(), from.Get(), fromSize);
+            Memory::DestructItems(from.Get(), fromSize);
             from.Free();
         }
     }
