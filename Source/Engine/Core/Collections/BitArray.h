@@ -14,23 +14,23 @@ API_CLASS(InBuild) class BitArray
 {
     friend BitArray;
 public:
-    using ItemType = uint64;
+    using BlockType = uint64;
     using AllocationType = HeapAllocation; // Disable custom allocation for now.
-    using AllocationData = typename AllocationType::template Data<ItemType>;
+    using AllocationData = typename AllocationType::template Data<BlockType>;
 
 private:
-    int32 _count;
-    int32 _capacity;
+    int32 _bitCount;
+    int32 _bitCapacity;
     AllocationData _allocation;
 
     FORCE_INLINE static int32 ToItemCount(const int32 size)
     {
-        return Math::DivideAndRoundUp<int32>(size, sizeof(ItemType));
+        return Math::DivideAndRoundUp<int32>(size, sizeof(BlockType));
     }
 
     FORCE_INLINE static int32 ToItemCapacity(const int32 size)
     {
-        return Math::Max<int32>(Math::DivideAndRoundUp<int32>(size, sizeof(ItemType)), 1);
+        return Math::Max<int32>(Math::DivideAndRoundUp<int32>(size, sizeof(BlockType)), 1);
     }
 
 public:
@@ -38,8 +38,8 @@ public:
     /// Initializes a new instance of the <see cref="BitArray"/> class.
     /// </summary>
     FORCE_INLINE BitArray()
-        : _count(0)
-        , _capacity(0)
+        : _bitCount(0)
+        , _bitCapacity(0)
     {
     }
 
@@ -48,8 +48,8 @@ public:
     /// </summary>
     /// <param name="capacity">The initial capacity.</param>
     explicit BitArray(const int32 capacity)
-        : _count(0)
-        , _capacity(capacity)
+        : _bitCount(0)
+        , _bitCapacity(capacity)
     {
         if (capacity > 0)
             _allocation.Allocate(ToItemCapacity(capacity));
@@ -61,12 +61,12 @@ public:
     /// <param name="other">The other collection to copy.</param>
     BitArray(const BitArray& other) noexcept
     {
-        _count = _capacity = other.Count();
-        if (_capacity > 0)
+        _bitCount = _bitCapacity = other.Count();
+        if (_bitCapacity > 0)
         {
-            const int32 itemsCapacity = ToItemCapacity(_capacity);
+            const int32 itemsCapacity = ToItemCapacity(_bitCapacity);
             _allocation.Allocate(itemsCapacity);
-            Platform::MemoryCopy(Get(), other.Get(), itemsCapacity * sizeof(ItemType));
+            Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), itemsCapacity * sizeof(BlockType));
         }
     }
 
@@ -77,12 +77,12 @@ public:
     template<typename OtherAllocationType = AllocationType>
     explicit BitArray(const BitArray<OtherAllocationType>& other) noexcept
     {
-        _count = _capacity = other.Count();
-        if (_capacity > 0)
+        _bitCount = _bitCapacity = other.Count();
+        if (_bitCapacity > 0)
         {
-            const int32 itemsCapacity = ToItemCapacity(_capacity);
+            const int32 itemsCapacity = ToItemCapacity(_bitCapacity);
             _allocation.Allocate(itemsCapacity);
-            Platform::MemoryCopy(Get(), other.Get(), itemsCapacity * sizeof(ItemType));
+            Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), itemsCapacity * sizeof(BlockType));
         }
     }
 
@@ -92,10 +92,10 @@ public:
     /// <param name="other">The other collection to move.</param>
     FORCE_INLINE BitArray(BitArray&& other) noexcept
     {
-        _count = other._count;
-        _capacity = other._capacity;
-        other._count = 0;
-        other._capacity = 0;
+        _bitCount = other._bitCount;
+        _bitCapacity = other._bitCapacity;
+        other._bitCount = 0;
+        other._bitCapacity = 0;
         _allocation.Swap(other._allocation); // WHAT?!
     }
 
@@ -108,15 +108,15 @@ public:
     {
         if (this != &other)
         {
-            if (_capacity < other._count)
+            if (_bitCapacity < other._bitCount)
             {
                 _allocation.Free();
-                _capacity = other._count;
-                const int32 itemsCapacity = ToItemCapacity(_capacity);
+                _bitCapacity = other._bitCount;
+                const int32 itemsCapacity = ToItemCapacity(_bitCapacity);
                 _allocation.Allocate(itemsCapacity);
-                Platform::MemoryCopy(Get(), other.Get(), itemsCapacity * sizeof(ItemType));
+                Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), itemsCapacity * sizeof(BlockType));
             }
-            _count = other._count;
+            _bitCount = other._bitCount;
         }
         return *this;
     }
@@ -131,10 +131,10 @@ public:
         if (this != &other)
         {
             _allocation.Free();
-            _count = other._count;
-            _capacity = other._capacity;
-            other._count = 0;
-            other._capacity = 0;
+            _bitCount = other._bitCount;
+            _bitCapacity = other._bitCapacity;
+            other._bitCount = 0;
+            other._bitCapacity = 0;
             _allocation.Swap(other._allocation); // WHAT?!
         }
         return *this;
@@ -151,7 +151,7 @@ public:
     /// <summary>
     /// Gets the pointer to the bits storage data (linear allocation).
     /// </summary>
-    FORCE_INLINE ItemType* Get()
+    FORCE_INLINE BlockType* GetBlocks()
     {
         return _allocation.Get();
     }
@@ -159,7 +159,7 @@ public:
     /// <summary>
     /// Gets the pointer to the bits storage data (linear allocation).
     /// </summary>
-    FORCE_INLINE const ItemType* Get() const
+    FORCE_INLINE const BlockType* GetBlocks() const
     {
         return _allocation.Get();
     }
@@ -169,7 +169,7 @@ public:
     /// </summary>
     FORCE_INLINE int32 Count() const
     {
-        return _count;
+        return _bitCount;
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ public:
     /// </summary>
     FORCE_INLINE int32 Capacity() const
     {
-        return _capacity;
+        return _bitCapacity;
     }
 
     /// <summary>
@@ -185,7 +185,7 @@ public:
     /// </summary>
     FORCE_INLINE bool HasItems() const
     {
-        return _count != 0;
+        return _bitCount != 0;
     }
 
     /// <summary>
@@ -193,7 +193,7 @@ public:
     /// </summary>
     FORCE_INLINE bool IsEmpty() const
     {
-        return _count == 0;
+        return _bitCount == 0;
     }
 
     /// <summary>
@@ -213,10 +213,10 @@ public:
     /// <returns>The value of the item.</returns>
     bool Get(const int32 index) const
     {
-        ASSERT(index >= 0 && index < _count);
-        const ItemType offset = index / sizeof(ItemType);
-        const ItemType bitMask = (ItemType)(int32)(1 << (index & ((int32)sizeof(ItemType) - 1)));
-        const ItemType item = ((ItemType*)_allocation.Get())[offset];
+        ASSERT(index >= 0 && index < _bitCount);
+        const BlockType offset = index / sizeof(BlockType);
+        const BlockType bitMask = (BlockType)(int32)(1 << (index & ((int32)sizeof(BlockType) - 1)));
+        const BlockType item = ((BlockType*)_allocation.Get())[offset];
         return (item & bitMask) != 0;
     }
 
@@ -227,10 +227,10 @@ public:
     /// <param name="value">The value to set.</param>
     void Set(const int32 index, const bool value)
     {
-        ASSERT(index >= 0 && index < _count);
-        const ItemType offset = index / sizeof(ItemType);
-        const ItemType bitMask = (ItemType)(int32)(1 << (index & ((int32)sizeof(ItemType) - 1)));
-        ItemType& item = ((ItemType*)_allocation.Get())[offset];
+        ASSERT(index >= 0 && index < _bitCount);
+        const BlockType offset = index / sizeof(BlockType);
+        const BlockType bitMask = (BlockType)(int32)(1 << (index & ((int32)sizeof(BlockType) - 1)));
+        BlockType& item = ((BlockType*)_allocation.Get())[offset];
         if (value)
             item |= bitMask;
         else
@@ -243,7 +243,7 @@ public:
     /// </summary>
     FORCE_INLINE void Clear()
     {
-        _count = 0;
+        _bitCount = 0;
     }
 
     /// <summary>
@@ -251,8 +251,8 @@ public:
     /// </summary>
     FORCE_INLINE void ClearAndFree()
     {
-        _count = 0;
-        _capacity = 0;
+        _bitCount = 0;
+        _bitCapacity = 0;
         _allocation.Free();
     }
 
@@ -263,13 +263,13 @@ public:
     /// <param name="preserveContents">True if preserve collection data when changing its size, otherwise collection after resize will be empty.</param>
     void SetCapacity(const int32 capacity, const bool preserveContents = true) //TODO Remove this method.
     {
-        if (capacity == _capacity)
+        if (capacity == _bitCapacity)
             return;
         ASSERT(capacity >= 0);
-        const int32 count = preserveContents ? (_count < capacity ? _count : capacity) : 0;
-        _allocation.Relocate(ToItemCapacity(capacity), ToItemCount(_count), ToItemCount(count));
-        _capacity = capacity;
-        _count = count;
+        const int32 count = preserveContents ? (_bitCount < capacity ? _bitCount : capacity) : 0;
+        _allocation.Relocate(ToItemCapacity(capacity), ToItemCount(_bitCount), ToItemCount(count));
+        _bitCapacity = capacity;
+        _bitCount = count;
     }
 
     /// <summary>
@@ -279,9 +279,9 @@ public:
     /// <param name="preserveContents">True if preserve collection data when changing its size, otherwise collection after resize might not contain the previous data.</param>
     void Resize(const int32 size, const bool preserveContents = true)
     {
-        if (_count <= size)
+        if (_bitCount <= size)
             EnsureCapacity(size, preserveContents);
-        _count = size;
+        _bitCount = size;
     }
 
     /// <summary>
@@ -291,9 +291,9 @@ public:
     /// <param name="preserveContents">True if preserve collection data when changing its size, otherwise collection after resize will be empty.</param>
     void EnsureCapacity(const int32 minCapacity, const bool preserveContents = true)
     {
-        if (_capacity < minCapacity)
+        if (_bitCapacity < minCapacity)
         {
-            const int32 capacity = _allocation.CalculateCapacityGrow(ToItemCapacity(_capacity), minCapacity);
+            const int32 capacity = _allocation.CalculateCapacityGrow(ToItemCapacity(_bitCapacity), minCapacity);
             SetCapacity(capacity, preserveContents);
         }
     }
@@ -304,8 +304,8 @@ public:
     /// <param name="value">The value to assign to all the collection items.</param>
     void SetAll(const bool value)
     {
-        if (_count != 0)
-            Platform::MemorySet(_allocation.Get(), ToItemCount(_count) * sizeof(ItemType), value ? MAX_uint32 : 0);
+        if (_bitCount != 0)
+            Platform::MemorySet(_allocation.Get(), ToItemCount(_bitCount) * sizeof(BlockType), value ? MAX_uint32 : 0);
     }
 
     /// <summary>
@@ -314,9 +314,9 @@ public:
     /// <param name="item">The item to add.</param>
     void Add(const bool item)
     {
-        EnsureCapacity(_count + 1);
-        ++_count;
-        Set(_count - 1, item);
+        EnsureCapacity(_bitCount + 1);
+        ++_bitCount;
+        Set(_bitCount - 1, item);
     }
 
     /// <summary>
@@ -326,7 +326,7 @@ public:
     /// <param name="count">The items count.</param>
     void Add(const bool* items, const int32 count)
     {
-        EnsureCapacity(_count + count);
+        EnsureCapacity(_bitCount + count);
         for (int32 i = 0; i < count; ++i)
             Add(items[i]);
     }
@@ -337,7 +337,7 @@ public:
     /// <param name="other">The other collection to add.</param>
     void Add(const BitArray& other)
     {
-        EnsureCapacity(_count, other.Count());
+        EnsureCapacity(_bitCount, other.Count());
         for (int32 i = 0; i < other.Count(); ++i)
             Add(other[i]);
     }
@@ -348,8 +348,8 @@ public:
     /// <param name="other">The other collection.</param>
     void Swap(BitArray& other)
     {
-        ::Swap(_count, other._count);
-        ::Swap(_capacity, other._capacity);
+        ::Swap(_bitCount, other._bitCount);
+        ::Swap(_bitCapacity, other._bitCapacity);
         _allocation.Swap(other._allocation);
     }
 
@@ -357,9 +357,9 @@ public:
     template<typename OtherAllocationType = AllocationType>
     bool operator==(const BitArray<OtherAllocationType>& other) const
     {
-        if (_count == other.Count())
+        if (_bitCount == other.Count())
         {
-            for (int32 i = 0; i < _count; i++)
+            for (int32 i = 0; i < _bitCount; i++)
             {
                 if (!(Get(i) == other.Get(i)))
                     return false;
