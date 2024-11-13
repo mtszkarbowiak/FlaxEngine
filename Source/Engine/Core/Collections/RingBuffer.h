@@ -10,11 +10,12 @@
 /// <summary>
 /// Template for ring buffer with variable capacity.
 /// </summary>
-template<typename T, typename AllocationType = HeapAllocation>
+template<typename T>
 class RingBuffer
 {
 public:
     using ItemType = T;
+    using AllocationType = HeapAllocation; //TODO Reimplement RingBuffer to support custom allocation type. (Only heap allocation supports swap)
     using AllocationData = typename AllocationType::template Data<T>;
 
 private:
