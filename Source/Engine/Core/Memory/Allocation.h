@@ -23,13 +23,24 @@ public:
         byte _data[Capacity * sizeof(T)];
 
     public:
-        FORCE_INLINE Data()
-        {
-        }
+        FORCE_INLINE Data() = default;
 
-        FORCE_INLINE ~Data()
-        {
-        }
+        FORCE_INLINE ~Data() = default;
+
+
+        /// <summary> Fixed allocation must not be moved. *It's fixed, after all.* </summary>
+        Data(Data&&) = delete;
+
+        /// <summary> Fixed allocation must not be moved. *It's fixed, after all.* </summary>
+        auto operator=(Data&&) -> Data & = delete;
+
+
+        /// <summary> No allocation can be copied. </summary>
+        Data(const Data&) = delete;
+
+        /// <summary> No allocation can be copied. </summary>
+        auto operator=(const Data&) -> Data & = delete;
+
 
         FORCE_INLINE T* Get()
         {
@@ -91,14 +102,40 @@ public:
         T* _data = nullptr;
 
     public:
-        FORCE_INLINE Data()
-        {
-        }
+        FORCE_INLINE Data() = default;
 
         FORCE_INLINE ~Data()
         {
-            Allocator::Free(_data);
+            if (_data)
+                Allocator::Free(_data);
         }
+        
+
+        /// <summary> Initializes allocation by moving data from another allocation. </summary>
+        FORCE_INLINE Data(Data&& other) noexcept
+        {
+            ::Swap(this->_data, other._data);
+            // Other allocation is now empty.
+        }
+
+        /// <summary> Reassigns allocation by moving data from another allocation. </summary>
+        FORCE_INLINE auto operator=(Data&& other) noexcept -> Data&
+        {
+            if (this != &other)
+            {
+                ::Swap(this->_data, other._data);
+                // Other allocation now has the pointer (or nullptr) to be freed in the destructor.
+            }
+            return *this;
+        }
+
+
+        /// <summary> No allocation can be copied. </summary>
+        Data(const Data&) = delete;
+
+        /// <summary> No allocation can be copied. </summary>
+        auto operator=(const Data&) -> Data & = delete;
+
 
         FORCE_INLINE T* Get()
         {
@@ -199,13 +236,27 @@ public:
         OtherData _other;
 
     public:
-        FORCE_INLINE Data()
-        {
-        }
+        FORCE_INLINE Data() = default;
 
         FORCE_INLINE ~Data()
         {
         }
+
+
+        /// <summary> Fixed allocation must not be moved. *It's fixed, after all.* </summary>
+        Data(Data&&) = delete; //TODO(mtszkarbowiak) Make move-ability polymorphic.
+
+        /// <summary> Fixed allocation must not be moved. *It's fixed, after all.* </summary>
+        auto operator=(Data&&) -> Data & = delete; //TODO(mtszkarbowiak) Make move-ability polymorphic.
+
+
+        /// <summary> No allocation can be copied. </summary>
+        Data(const Data&) = delete;
+
+        /// <summary> No allocation can be copied. </summary>
+        auto operator=(const Data&) -> Data & = delete;
+
+
 
         FORCE_INLINE T* Get()
         {
