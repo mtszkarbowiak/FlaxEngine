@@ -166,20 +166,6 @@ private:
     int32 _size = 0;
     AllocationData _allocation;
 
-    //TODO(mtszkarbowiak) Stage 2. - Unify ALL move-to-empty methods in all collections.
-    FORCE_INLINE static void MoveToEmpty(AllocationData& to, AllocationData& from, const int32 fromSize)
-    {
-        if IF_CONSTEXPR (AllocationType::HasSwap)
-            to.Swap(from);
-        else
-        {
-            to.Allocate(fromSize);
-            Memory::MoveItems(to.Get(), from.Get(), fromSize);
-            Memory::DestructItems(from.Get(), fromSize);
-            from.Free();
-        }
-    }
-
 public:
     /// <summary>
     /// Initializes a new instance of the <see cref="Dictionary"/> class.
