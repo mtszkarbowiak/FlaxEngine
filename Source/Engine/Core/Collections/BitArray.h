@@ -23,12 +23,12 @@ private:
     int32 _bitCapacity;
     AllocationData _allocation;
 
-    FORCE_INLINE static int32 ToItemCount(const int32 size)
+    FORCE_INLINE static int32 ToBlockCount(const int32 size)
     {
         return Math::DivideAndRoundUp<int32>(size, sizeof(BlockType));
     }
 
-    FORCE_INLINE static int32 ToItemCapacity(const int32 size)
+    FORCE_INLINE static int32 ToBlockCapacity(const int32 size)
     {
         return Math::Max<int32>(Math::DivideAndRoundUp<int32>(size, sizeof(BlockType)), 1);
     }
@@ -52,7 +52,7 @@ public:
         , _bitCapacity(capacity)
     {
         if (capacity > 0)
-            _allocation.Allocate(ToItemCapacity(capacity));
+            _allocation.Allocate(ToBlockCapacity(capacity));
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public:
         _bitCount = _bitCapacity = other.Count();
         if (_bitCapacity > 0)
         {
-            const int32 itemsCapacity = ToItemCapacity(_bitCapacity);
+            const int32 itemsCapacity = ToBlockCapacity(_bitCapacity);
             _allocation.Allocate(itemsCapacity);
             Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), itemsCapacity * sizeof(BlockType));
         }
@@ -80,7 +80,7 @@ public:
         _bitCount = _bitCapacity = other.Count();
         if (_bitCapacity > 0)
         {
-            const int32 itemsCapacity = ToItemCapacity(_bitCapacity);
+            const int32 itemsCapacity = ToBlockCapacity(_bitCapacity);
             _allocation.Allocate(itemsCapacity);
             Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), itemsCapacity * sizeof(BlockType));
         }
@@ -112,7 +112,7 @@ public:
             {
                 _allocation.Free();
                 _bitCapacity = other._bitCount;
-                const int32 itemsCapacity = ToItemCapacity(_bitCapacity);
+                const int32 itemsCapacity = ToBlockCapacity(_bitCapacity);
                 _allocation.Allocate(itemsCapacity);
                 Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), itemsCapacity * sizeof(BlockType));
             }
@@ -211,13 +211,16 @@ public:
     /// </summary>
     /// <param name="index">The index of the item.</param>
     /// <returns>The value of the item.</returns>
-    bool Get(const int32 index) const
+    FORCE_INLINE bool Get(const int32 index) const
     {
         ASSERT(index >= 0 && index < _bitCount);
-        const BlockType offset = index / sizeof(BlockType);
-        const BlockType bitMask = (BlockType)(int32)(1 << (index & ((int32)sizeof(BlockType) - 1)));
-        const BlockType item = ((BlockType*)_allocation.Get())[offset];
-        return (item & bitMask) != 0;
+
+        const int32 blockIndex = index / sizeof(BlockType);
+        const int32 bitIndex = index % sizeof(BlockType);
+        const BlockType& block = _allocation.Get()[blockIndex];
+        const BlockType mask = BlockType{ 1 } << bitIndex;
+
+        return (block & mask) != 0;
     }
 
     /// <summary>
@@ -225,16 +228,24 @@ public:
     /// </summary>
     /// <param name="index">The index of the item.</param>
     /// <param name="value">The value to set.</param>
-    void Set(const int32 index, const bool value)
+    FORCE_INLINE void Set(const int32 index, const bool value)
     {
         ASSERT(index >= 0 && index < _bitCount);
-        const BlockType offset = index / sizeof(BlockType);
-        const BlockType bitMask = (BlockType)(int32)(1 << (index & ((int32)sizeof(BlockType) - 1)));
-        BlockType& item = ((BlockType*)_allocation.Get())[offset];
-        if (value)
-            item |= bitMask;
-        else
-            item &= ~bitMask;  // Clear the bit
+
+        const int32 blockIndex = index / sizeof(BlockType);
+        const int32 bitIndex = index % sizeof(BlockType);
+        const BlockType bitMask = BlockType{ 1 } << bitIndex;
+        BlockType& block = _allocation.Get()[blockIndex];
+
+        // Collapse bool value into 0 or 1 of BlockType.
+        // Then flip the sign, creating a mask: 0b00000... or 0b11111... .
+        const BlockType toggleMask = -static_cast<BlockType>(value);
+
+        // Now use the mask to toggle between 
+        block = 
+            (block & ~bitMask) // Filter the old mask out.
+            | 
+            (toggleMask & bitMask); // Optionally, set the new mask in.
     }
 
 public:
@@ -267,7 +278,7 @@ public:
             return;
         ASSERT(capacity >= 0);
         const int32 count = preserveContents ? (_bitCount < capacity ? _bitCount : capacity) : 0;
-        _allocation.Relocate(ToItemCapacity(capacity), ToItemCount(_bitCount), ToItemCount(count));
+        _allocation.Relocate(ToBlockCapacity(capacity), ToBlockCount(_bitCount), ToBlockCount(count));
         _bitCapacity = capacity;
         _bitCount = count;
     }
@@ -293,7 +304,7 @@ public:
     {
         if (_bitCapacity < minCapacity)
         {
-            const int32 capacity = _allocation.CalculateCapacityGrow(ToItemCapacity(_bitCapacity), minCapacity);
+            const int32 capacity = _allocation.CalculateCapacityGrow(ToBlockCapacity(_bitCapacity), minCapacity);
             SetCapacity(capacity, preserveContents);
         }
     }
@@ -305,7 +316,7 @@ public:
     void SetAll(const bool value)
     {
         if (_bitCount != 0)
-            Platform::MemorySet(_allocation.Get(), ToItemCount(_bitCount) * sizeof(BlockType), value ? MAX_uint32 : 0);
+            Platform::MemorySet(_allocation.Get(), ToBlockCount(_bitCount) * sizeof(BlockType), value ? MAX_uint32 : 0);
     }
 
     /// <summary>
