@@ -9,12 +9,13 @@
 /// <summary>
 /// Template for dynamic array with variable capacity that stores the bit values.
 /// </summary>
-template<typename AllocationType = HeapAllocation>
+template<typename WannaBeAlloc = HeapAllocation> //TODO Use template argument allocation.
 API_CLASS(InBuild) class BitArray
 {
     friend BitArray;
 public:
     using ItemType = uint64;
+    using AllocationType = HeapAllocation; // Disable custom allocation for now.
     using AllocationData = typename AllocationType::template Data<ItemType>;
 
 private:
@@ -95,7 +96,7 @@ public:
         _capacity = other._capacity;
         other._count = 0;
         other._capacity = 0;
-        _allocation.Swap(other._allocation);
+        _allocation.Swap(other._allocation); // WHAT?!
     }
 
     /// <summary>
@@ -134,7 +135,7 @@ public:
             _capacity = other._capacity;
             other._count = 0;
             other._capacity = 0;
-            _allocation.Swap(other._allocation);
+            _allocation.Swap(other._allocation); // WHAT?!
         }
         return *this;
     }
