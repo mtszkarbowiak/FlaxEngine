@@ -234,6 +234,18 @@ struct TIsCopyConstructible
 	enum { Value = __is_constructible(T, typename TAddLValueReference<typename TAddConst<T>::Type>::Type) };
 };
 
+template<typename T>
+constexpr bool TIsCopyConstructibleV = TIsCopyConstructible<T>::Value;
+
+template<typename T>
+struct TIsMoveConstructible
+{
+    enum { Value = __is_constructible(T, typename TAddRValueReference<T>::Type) };
+};
+
+template<typename T>
+constexpr bool TIsMoveConstructibleV = TIsMoveConstructible<T>::Value;
+
 ////////////////////////////////////////////////////////////////////////////////////
 
 // Checks if a type has a trivial copy constructor.
@@ -370,6 +382,9 @@ template<typename Result>
 struct TEnableIf<false, Result>
 {
 };
+
+template<bool Predicate, typename Result = void>
+using TEnableIfT = typename TEnableIf<Predicate, Result>::Type;
 
 ////////////////////////////////////////////////////////////////////////////////////
 

@@ -7,8 +7,8 @@
 class CollectionUtils final
 {
     template<typename T, typename AllocationType>
-    FORCE_INLINE static std::enable_if_t<std::is_move_constructible< 
-        typename AllocationType::template Data<T>>::value
+    FORCE_INLINE static TEnableIfT<TIsMoveConstructibleV<
+        typename AllocationType::template Data<T>>
     > MoveLinearContentImpl(
         typename AllocationType::template Data<T>& to,
         typename AllocationType::template Data<T>& from,
@@ -20,9 +20,9 @@ class CollectionUtils final
     }
 
     template<typename T, typename AllocationType>
-    FORCE_INLINE static std::enable_if_t<!std::is_move_constructible< 
+    FORCE_INLINE static TEnableIfT<!TIsMoveConstructibleV< 
         typename AllocationType::template Data<T>
-    >::value> MoveLinearContentImpl(
+    >> MoveLinearContentImpl(
         typename AllocationType::template Data<T>& to,
         typename AllocationType::template Data<T>& from,
         const int32 fromCount,
