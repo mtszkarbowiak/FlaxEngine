@@ -136,7 +136,7 @@ public:
         other._count = 0;
         other._capacity = 0;
 
-        CollectionUtils::MoveToEmpty<T, AllocationType>(_allocation, other._allocation, _count, _capacity);
+        CollectionUtils::MoveLinearContent<T, AllocationType>(_allocation, other._allocation, _count, _capacity);
     }
 
     /// <summary>
@@ -194,7 +194,7 @@ public:
             other._count = 0;
             other._capacity = 0;
 
-            CollectionUtils::MoveToEmpty<T, AllocationType>(_allocation, other._allocation, _count, _capacity);
+            CollectionUtils::MoveLinearContent<T, AllocationType>(_allocation, other._allocation, _count, _capacity);
         }
         return *this;
     }
