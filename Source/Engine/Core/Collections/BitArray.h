@@ -239,7 +239,7 @@ public:
 
         // Collapse bool value into 0 or 1 of BlockType.
         // Then flip the sign, creating a mask: 0b00000... or 0b11111... .
-        const BlockType toggleMask = -static_cast<BlockType>(value);
+        const BlockType toggleMask = 0 - BlockType{ value != 0 };
 
         // Now use the mask to toggle between 
         block = 
