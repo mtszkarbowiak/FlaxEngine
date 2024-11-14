@@ -450,6 +450,7 @@ public:
     {
         if (_capacity < minCapacity)
         {
+            ASSERT(minCapacity <= AllocationType::MaxCapacity);
             const int32 capacity = _allocation.CalculateCapacityGrow(_capacity, minCapacity);
             SetCapacity(capacity, preserveContents);
         }

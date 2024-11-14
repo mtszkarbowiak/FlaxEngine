@@ -12,6 +12,10 @@ class SimpleHeapAllocation
 public:
     enum { HasSwap = true };
 
+    constexpr static int32 MinCapacity = 1;
+    constexpr static int32 MaxCapacity = MAX_int32;
+
+
     template<typename T>
     class Data
     {

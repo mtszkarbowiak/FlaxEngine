@@ -636,6 +636,8 @@ public:
     {
         if (_size >= minCapacity)
             return;
+
+        ASSERT(minCapacity <= AllocationType::MaxCapacity);
         int32 capacity = _allocation.CalculateCapacityGrow(_size, minCapacity);
         if (capacity < DICTIONARY_DEFAULT_CAPACITY)
             capacity = DICTIONARY_DEFAULT_CAPACITY;

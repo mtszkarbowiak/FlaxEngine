@@ -15,6 +15,10 @@ class FixedAllocation
 public:
     enum { HasSwap = false };
 
+    constexpr static int32 MinCapacity = Capacity;
+    constexpr static int32 MaxCapacity = Capacity;
+
+
     //TODO(mtszkarbowiak) Stage 4. - Use move semantics for all allocations.
     template<typename T>
     class alignas(sizeof(void*)) Data
@@ -89,6 +93,10 @@ class HeapAllocation
 {
 public:
     enum { HasSwap = true };
+
+    constexpr static int32 MinCapacity = 1;
+    constexpr static int32 MaxCapacity = MAX_int32;
+
 
     //TODO(mtszkarbowiak) Stage 4. - Use move semantics for all allocations.
     template<typename T>
@@ -218,6 +226,10 @@ class InlinedAllocation
 {
 public:
     enum { HasSwap = false };
+
+    constexpr static int32 MinCapacity = Capacity;
+    constexpr static int32 MaxCapacity = MAX_int32;
+
 
     //TODO(mtszkarbowiak) Stage 4. - Use move semantics for all allocations.
     //TODO(mtszkarbowiak) Stage 4.1. (Optional) - Consider adding polymorphic allocation moves.

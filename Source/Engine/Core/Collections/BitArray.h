@@ -304,6 +304,7 @@ public:
     {
         if (_bitCapacity < minCapacity)
         {
+            ASSERT(ToBlockCapacity(minCapacity) <= AllocationType::MaxCapacity);
             const int32 capacity = _allocation.CalculateCapacityGrow(ToBlockCapacity(_bitCapacity), minCapacity);
             SetCapacity(capacity, preserveContents);
         }
