@@ -313,7 +313,9 @@ public:
         if (_bitCapacity < minBitCapacity)
         {
             ASSERT(ToBlockCapacity(minBitCapacity) <= AllocationType::MaxCapacity);
-            const int32 bitCapacity = _allocation.CalculateCapacityGrow(ToBlockCapacity(_bitCapacity), minBitCapacity);
+            const int32 bitCapacity = _allocation.CalculateCapacityGrow(_bitCapacity, minBitCapacity);
+            //TODO Get rid of calculating growth by allocator.
+            //TODO Use capacity in blocks instead of bits, when new allocation policy is implemented. It will simplify the code significantly.
             SetCapacity(bitCapacity, preserveContents);
         }
     }
