@@ -62,16 +62,12 @@ public:
         //TODO(mtskarbowiak) Stage 6. - Return allocation result.
         FORCE_INLINE void Allocate(const int32 capacity)
         {
-#if ENABLE_ASSERTION_LOW_LAYERS
-            ASSERT(capacity <= Capacity);
-#endif
+            ASSERT_LOW_LAYER(capacity <= Capacity);
         }
 
         FORCE_INLINE void Relocate(const int32 capacity, int32 oldCount, int32 newCount)
         {
-#if ENABLE_ASSERTION_LOW_LAYERS
-            ASSERT(capacity <= Capacity);
-#endif
+            ASSERT_LOW_LAYER(capacity <= Capacity);
         }
 
         FORCE_INLINE void Free()
@@ -81,7 +77,7 @@ public:
         //TODO(mtszkarbowiak) Stage 4.2. - Replace direct swap with move semantics.
         void Swap(Data& other)
         {
-            // Not supported
+            CRASH;
         }
     };
 };
@@ -334,7 +330,7 @@ public:
         //TODO(mtszkarbowiak) Stage 4.2. - Replace direct swap with move semantics.
         void Swap(Data& other)
         {
-            // Not supported
+            CRASH;
         }
     };
 };

@@ -11,9 +11,9 @@
 /// <param name="n"> Reference to the number to round up.</param>
 /// <remarks>
 /// Macros are used instead of functions to manually inline the code.
-/// Be very careful! Binding with non-pure expressions can cause unexpected behavior (e.g. ROUND_UP_TO_POWER_OF_TWO_16(x++)).
+/// Be very careful! Binding with non-pure expressions can cause unexpected behavior (e.g. ROUND_UP_TO_POWER_OF_TWO_8(x++)).
 /// </remarks>
-#define ROUND_UP_TO_POWER_OF_TWO_8(n) static_assert(sizeof(n) == 2, "The number must be 16-bit."); \
+#define ROUND_UP_TO_POWER_OF_TWO_8(n) static_assert(sizeof(n) == 2, "The number must be 8-bit."); \
     --(n);            \
     (n) |= (n) >> 1;  \
     (n) |= (n) >> 2;  \
@@ -44,7 +44,7 @@
 /// <param name="n"> Reference to the number to round up.</param>
 /// <remarks>
 /// Macros are used instead of functions to manually inline the code.
-/// Be very careful! Binding with non-pure expressions can cause unexpected behavior (e.g. ROUND_UP_TO_POWER_OF_TWO_16(x++)).
+/// Be very careful! Binding with non-pure expressions can cause unexpected behavior (e.g. ROUND_UP_TO_POWER_OF_TWO_32(x++)).
 /// </remarks>
 #define ROUND_UP_TO_POWER_OF_TWO_32(n) static_assert(sizeof(n) == 4, "The number must be 32-bit."); \
     --(n);            \
@@ -62,7 +62,7 @@
 /// <param name="n"> Reference to the number to round up.</param>
 /// <remarks>
 /// Macros are used instead of functions to manually inline the code.
-/// Be very careful! Binding with non-pure expressions can cause unexpected behavior (e.g. ROUND_UP_TO_POWER_OF_TWO_16(x++)).
+/// Be very careful! Binding with non-pure expressions can cause unexpected behavior (e.g. ROUND_UP_TO_POWER_OF_TWO_64(x++)).
 /// </remarks>
 #define ROUND_UP_TO_POWER_OF_TWO_64(n) static_assert(sizeof(n) == 8, "The number must be 64-bit."); \
     --(n);            \
