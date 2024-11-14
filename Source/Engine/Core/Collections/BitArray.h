@@ -13,6 +13,7 @@ template<typename WannaBeAlloc = HeapAllocation> //TODO Use template argument al
 API_CLASS(InBuild) class BitArray
 {
     friend BitArray;
+
 public:
     using BlockType = uint64;
     using AllocationType = HeapAllocation; // Disable custom allocation for now.
@@ -23,14 +24,14 @@ private:
     int32 _bitCapacity;
     AllocationData _allocation;
 
-    FORCE_INLINE static int32 ToBlockCount(const int32 size)
+    FORCE_INLINE static int32 ToBlockCount(const int32 bitCount)
     {
-        return Math::DivideAndRoundUp<int32>(size, sizeof(BlockType));
+        return Math::DivideAndRoundUp<int32>(bitCount, sizeof(BlockType));
     }
 
-    FORCE_INLINE static int32 ToBlockCapacity(const int32 size)
+    FORCE_INLINE static int32 ToBlockCapacity(const int32 bitCount)
     {
-        return Math::Max<int32>(Math::DivideAndRoundUp<int32>(size, sizeof(BlockType)), 1);
+        return Math::Max<int32>(Math::DivideAndRoundUp<int32>(bitCount, sizeof(BlockType)), 1);
     }
 
 public:
@@ -46,13 +47,13 @@ public:
     /// <summary>
     /// Initializes a new instance of the <see cref="BitArray"/> class.
     /// </summary>
-    /// <param name="capacity">The initial capacity.</param>
-    explicit BitArray(const int32 capacity)
+    /// <param name="bitCapacity">The initial capacity.</param>
+    explicit BitArray(const int32 bitCapacity)
         : _bitCount(0)
-        , _bitCapacity(capacity)
+        , _bitCapacity(bitCapacity)
     {
-        if (capacity > 0)
-            _allocation.Allocate(ToBlockCapacity(capacity));
+        if (bitCapacity > 0)
+            _allocation.Allocate(ToBlockCapacity(bitCapacity));
     }
 
     /// <summary>
@@ -64,9 +65,9 @@ public:
         _bitCount = _bitCapacity = other.Count();
         if (_bitCapacity > 0)
         {
-            const int32 itemsCapacity = ToBlockCapacity(_bitCapacity);
-            _allocation.Allocate(itemsCapacity);
-            Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), itemsCapacity * sizeof(BlockType));
+            const int32 blockCapacity = ToBlockCapacity(_bitCapacity);
+            _allocation.Allocate(blockCapacity);
+            Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), blockCapacity * sizeof(BlockType));
         }
     }
 
@@ -80,9 +81,9 @@ public:
         _bitCount = _bitCapacity = other.Count();
         if (_bitCapacity > 0)
         {
-            const int32 itemsCapacity = ToBlockCapacity(_bitCapacity);
-            _allocation.Allocate(itemsCapacity);
-            Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), itemsCapacity * sizeof(BlockType));
+            const int32 blockCapacity = ToBlockCapacity(_bitCapacity);
+            _allocation.Allocate(blockCapacity);
+            Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), blockCapacity * sizeof(BlockType));
         }
     }
 
@@ -112,9 +113,9 @@ public:
             {
                 _allocation.Free();
                 _bitCapacity = other._bitCount;
-                const int32 itemsCapacity = ToBlockCapacity(_bitCapacity);
-                _allocation.Allocate(itemsCapacity);
-                Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), itemsCapacity * sizeof(BlockType));
+                const int32 blockCapacity = ToBlockCapacity(_bitCapacity);
+                _allocation.Allocate(blockCapacity);
+                Platform::MemoryCopy(GetBlocks(), other.GetBlocks(), blockCapacity * sizeof(BlockType));
             }
             _bitCount = other._bitCount;
         }
@@ -199,26 +200,26 @@ public:
     /// <summary>
     /// Gets the item at the given index.
     /// </summary>
-    /// <param name="index">The index of the item.</param>
+    /// <param name="bitIndex">The index of the item.</param>
     /// <returns>The value of the item.</returns>
-    FORCE_INLINE bool operator[](const int32 index) const
+    FORCE_INLINE bool operator[](const int32 bitIndex) const
     {
-        return Get(index);
+        return Get(bitIndex);
     }
 
     /// <summary>
     /// Gets the item at the given index.
     /// </summary>
-    /// <param name="index">The index of the item.</param>
+    /// <param name="bitIndex">The index of the item.</param>
     /// <returns>The value of the item.</returns>
-    FORCE_INLINE bool Get(const int32 index) const
+    FORCE_INLINE bool Get(const int32 bitIndex) const
     {
-        ASSERT(index >= 0 && index < _bitCount);
+        ASSERT(bitIndex >= 0 && bitIndex < _bitCount);
 
-        const int32 blockIndex = index / sizeof(BlockType);
-        const int32 bitIndex = index % sizeof(BlockType);
+        const int32 blockIndex = bitIndex / sizeof(BlockType);
+        const int32 localBlockIndex = bitIndex % sizeof(BlockType); // Local means inside the block.
         const BlockType& block = _allocation.Get()[blockIndex];
-        const BlockType mask = BlockType{ 1 } << bitIndex;
+        const BlockType mask = BlockType{ 1 } << localBlockIndex;
 
         return (block & mask) != 0;
     }
@@ -226,15 +227,15 @@ public:
     /// <summary>
     /// Sets the item at the given index.
     /// </summary>
-    /// <param name="index">The index of the item.</param>
+    /// <param name="bitIndex">The index of the item.</param>
     /// <param name="value">The value to set.</param>
-    FORCE_INLINE void Set(const int32 index, const bool value)
+    FORCE_INLINE void Set(const int32 bitIndex, const bool value)
     {
-        ASSERT(index >= 0 && index < _bitCount);
+        ASSERT(bitIndex >= 0 && bitIndex < _bitCount);
 
-        const int32 blockIndex = index / sizeof(BlockType);
-        const int32 bitIndex = index % sizeof(BlockType);
-        const BlockType bitMask = BlockType{ 1 } << bitIndex;
+        const int32 blockIndex = bitIndex / sizeof(BlockType);
+        const int32 localBitIndex = bitIndex % sizeof(BlockType);
+        const BlockType bitMask = BlockType{ 1 } << localBitIndex; // Local means inside the block.
         BlockType& block = _allocation.Get()[blockIndex];
 
         // Collapse bool value into 0 or 1 of BlockType.
@@ -271,44 +272,49 @@ private:
     /// <summary>
     /// Changes the capacity of the collection.
     /// </summary>
-    /// <param name="capacity">The new capacity.</param>
+    /// <param name="bitCapacity">The new capacity.</param>
     /// <param name="preserveContents">True if preserve collection data when changing its size, otherwise collection after resize will be empty.</param>
-    void SetCapacity(const int32 capacity, const bool preserveContents = true) //TODO Remove this method.
+    void SetCapacity(const int32 bitCapacity, const bool preserveContents = true) //TODO Remove this method.
     {
-        if (capacity == _bitCapacity)
+        if (bitCapacity == _bitCapacity)
             return;
-        ASSERT(capacity >= 0);
-        const int32 count = preserveContents ? (_bitCount < capacity ? _bitCount : capacity) : 0;
-        _allocation.Relocate(ToBlockCapacity(capacity), ToBlockCount(_bitCount), ToBlockCount(count));
-        _bitCapacity = capacity;
-        _bitCount = count;
+        ASSERT(bitCapacity >= 0);
+        const int32 newBitCount = preserveContents ? (_bitCount < bitCapacity ? _bitCount : bitCapacity) : 0;
+
+        const int32 blockCapacity = ToBlockCapacity(bitCapacity);
+        const int32 oldBlockCount = ToBlockCount(_bitCount);
+        const int32 newBlockCount = ToBlockCount(newBitCount);
+
+        _allocation.Relocate(blockCapacity, oldBlockCount, newBlockCount);
+        _bitCapacity = bitCapacity;
+        _bitCount = newBitCount;
     }
 
 public:
     /// <summary>
     /// Resizes the collection to the specified size. If the size is equal or less to the current capacity no additional memory reallocation in performed.
     /// </summary>
-    /// <param name="size">The new collection size.</param>
+    /// <param name="bitCount">The new collection size.</param>
     /// <param name="preserveContents">True if preserve collection data when changing its size, otherwise collection after resize might not contain the previous data.</param>
-    void Resize(const int32 size, const bool preserveContents = true)
+    void Resize(const int32 bitCount, const bool preserveContents = true)
     {
-        if (_bitCount <= size)
-            EnsureCapacity(size, preserveContents);
-        _bitCount = size;
+        if (_bitCount <= bitCount)
+            EnsureCapacity(bitCount, preserveContents);
+        _bitCount = bitCount;
     }
 
     /// <summary>
     /// Ensures the collection has given capacity (or more).
     /// </summary>
-    /// <param name="minCapacity">The minimum capacity.</param>
+    /// <param name="minBitCapacity">The minimum capacity.</param>
     /// <param name="preserveContents">True if preserve collection data when changing its size, otherwise collection after resize will be empty.</param>
-    void EnsureCapacity(const int32 minCapacity, const bool preserveContents = true)
+    void EnsureCapacity(const int32 minBitCapacity, const bool preserveContents = true)
     {
-        if (_bitCapacity < minCapacity)
+        if (_bitCapacity < minBitCapacity)
         {
-            ASSERT(ToBlockCapacity(minCapacity) <= AllocationType::MaxCapacity);
-            const int32 capacity = _allocation.CalculateCapacityGrow(ToBlockCapacity(_bitCapacity), minCapacity);
-            SetCapacity(capacity, preserveContents);
+            ASSERT(ToBlockCapacity(minBitCapacity) <= AllocationType::MaxCapacity);
+            const int32 bitCapacity = _allocation.CalculateCapacityGrow(ToBlockCapacity(_bitCapacity), minBitCapacity);
+            SetCapacity(bitCapacity, preserveContents);
         }
     }
 
