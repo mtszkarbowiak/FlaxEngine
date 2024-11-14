@@ -279,27 +279,27 @@ namespace Math
 
     // Divides two integers and rounds up
     template<class T>
-    static FORCE_INLINE T DivideAndRoundUp(T dividend, T divisor)
+    FORCE_INLINE constexpr static T DivideAndRoundUp(T dividend, T divisor)
     {
         return (dividend + divisor - 1) / divisor;
     }
 
     template<class T>
-    static FORCE_INLINE T DivideAndRoundDown(T dividend, T divisor)
+    FORCE_INLINE constexpr static T DivideAndRoundDown(T dividend, T divisor)
     {
         return dividend / divisor;
     }
 
     // Checks if value is inside the given range.
     template<class T>
-    static bool IsInRange(const T value, const T min, const T max)
+    constexpr static bool IsInRange(const T value, const T min, const T max)
     {
         return value >= min && value <= max;
     }
 
     // Checks if value isn't inside the given range.
     template<class T>
-    static bool IsNotInRange(const T value, const T min, const T max)
+    constexpr static bool IsNotInRange(const T value, const T min, const T max)
     {
         return value < min || value > max;
     }
@@ -312,14 +312,14 @@ namespace Math
 
     // Clamps value to be between minimum and maximum values, inclusive
     template<class T>
-    static T Clamp(const T value, const T min, const T max)
+    constexpr static T Clamp(const T value, const T min, const T max)
     {
         return value < min ? min : value < max ? value : max;
     }
 
     // Clamps value to be between 0 and 1 range, inclusive
     template<class T>
-    static T Saturate(const T value)
+    constexpr static T Saturate(const T value)
     {
         return value < 0 ? 0 : value < 1 ? value : 1;
     }
@@ -338,42 +338,42 @@ namespace Math
 
     // Returns highest of 2 values
     template<class T>
-    static T Max(const T a, const T b)
+    constexpr static T Max(const T a, const T b)
     {
         return a > b ? a : b;
     }
 
     // Returns lowest of 2 values
     template<class T>
-    static T Min(const T a, const T b)
+    constexpr static T Min(const T a, const T b)
     {
         return a < b ? a : b;
     }
 
     // Returns highest of 3 values
     template<class T>
-    static T Max(const T a, const T b, const T c)
+    constexpr static T Max(const T a, const T b, const T c)
     {
         return Max(Max(a, b), c);
     }
 
     // Returns highest of 4 values
     template<class T>
-    static T Max(const T a, const T b, const T c, const T d)
+    constexpr  static T Max(const T a, const T b, const T c, const T d)
     {
         return Max(Max(Max(a, b), c), d);
     }
 
     // Returns lowest of 3 values
     template<class T>
-    static T Min(const T a, const T b, const T c)
+    constexpr static T Min(const T a, const T b, const T c)
     {
         return Min(Min(a, b), c);
     }
 
     // Returns lowest of 4 values
     template<class T>
-    static T Min(const T a, const T b, const T c, const T d)
+    constexpr static T Min(const T a, const T b, const T c, const T d)
     {
         return Min(Min(Min(a, b), c), d);
     }
