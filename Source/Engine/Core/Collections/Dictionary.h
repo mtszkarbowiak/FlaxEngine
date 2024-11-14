@@ -574,6 +574,7 @@ public:
         Clear();
     }
 
+private:
     /// <summary>
     /// Changes the capacity of the collection.
     /// </summary>
@@ -627,6 +628,7 @@ public:
         }
     }
 
+public:
     /// <summary>
     /// Ensures that collection has given capacity.
     /// </summary>
