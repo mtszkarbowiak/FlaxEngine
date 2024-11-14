@@ -19,7 +19,14 @@ template<typename KeyType, typename ValueType, typename AllocationType = HeapAll
 API_CLASS(InBuild) class Dictionary
 {
     friend Dictionary;
+
 public:
+    constexpr static int32 DefaultCapacity = Math::Clamp(
+        DICTIONARY_DEFAULT_CAPACITY,
+        AllocationType::MinCapacity,
+        AllocationType::MaxCapacity
+    );
+
     /// <summary>
     /// Describes single portion of space for the key and value pair in a hash map.
     /// </summary>
@@ -640,9 +647,7 @@ public:
             return;
 
         ASSERT(minCapacity <= AllocationType::MaxCapacity);
-        int32 capacity = _allocation.CalculateCapacityGrow(_size, minCapacity);
-        if (capacity < DICTIONARY_DEFAULT_CAPACITY)
-            capacity = DICTIONARY_DEFAULT_CAPACITY;
+        const int32 capacity = CollectionUtils::CalculateCapacity<AllocationType>(Math::Max(minCapacity, DefaultCapacity));
         SetCapacity(capacity, preserveContents);
     }
 

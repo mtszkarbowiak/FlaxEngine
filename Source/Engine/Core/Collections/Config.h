@@ -5,7 +5,12 @@
 #include "Engine/Platform/Defines.h"
 
 /// <summary>
-/// Default capacity for the dictionaries (amount of space for the elements).
+/// Default capacity for the arrays.
+/// </summary>
+#define ARRAY_DEFAULT_CAPACITY 4
+
+/// <summary>
+/// Default capacity for the dictionaries.
 /// </summary>
 #ifndef DICTIONARY_DEFAULT_CAPACITY
 #if PLATFORM_DESKTOP

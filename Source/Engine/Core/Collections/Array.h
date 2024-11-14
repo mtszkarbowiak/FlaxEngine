@@ -7,6 +7,8 @@
 #include "Engine/Core/Memory/Memory.h"
 #include "Engine/Core/Memory/Allocation.h"
 #include "Engine/Core/Collections/CollectionUtils.h"
+#include "Engine/Core/Collections/Config.h"
+#include "Engine/Core/Math/Math.h"
 
 /// <summary>
 /// Template for dynamic array with variable capacity.
@@ -17,7 +19,14 @@ template<typename T, typename AllocationType = HeapAllocation>
 API_CLASS(InBuild) class Array
 {
     friend Array;
+
 public:
+    constexpr static int32 DefaultCapacity = Math::Clamp(
+        ARRAY_DEFAULT_CAPACITY,
+        AllocationType::MinCapacity,
+        AllocationType::MaxCapacity
+    );
+
     using ItemType = T;
     using AllocationData = typename AllocationType::template Data<T>;
 
@@ -451,7 +460,7 @@ public:
         if (_capacity < minCapacity)
         {
             ASSERT(minCapacity <= AllocationType::MaxCapacity);
-            const int32 capacity = _allocation.CalculateCapacityGrow(_capacity, minCapacity);
+            const int32 capacity = CollectionUtils::CalculateCapacity<AllocationType>(Math::Max(minCapacity, DefaultCapacity));
             SetCapacity(capacity, preserveContents);
         }
     }
