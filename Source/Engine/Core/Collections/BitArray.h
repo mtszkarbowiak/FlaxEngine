@@ -19,10 +19,15 @@ public:
     using AllocationType = HeapAllocation; // Disable custom allocation for now.
     using AllocationData = typename AllocationType::template Data<BlockType>;
 
+    constexpr static int32 DefaultCapacity = AllocationType::MinCapacity;
+    // BitArray uses allocators minimal capacity as its default capacity.
+
 private:
     int32 _bitCount;
     int32 _bitCapacity;
     AllocationData _allocation;
+
+    //TODO Use capacity in blocks instead of bits, when new allocation policy is implemented. It will simplify the code significantly.
 
     FORCE_INLINE static int32 ToBlockCount(const int32 bitCount)
     {
@@ -313,9 +318,7 @@ public:
         if (_bitCapacity < minBitCapacity)
         {
             ASSERT(ToBlockCapacity(minBitCapacity) <= AllocationType::MaxCapacity);
-            const int32 bitCapacity = _allocation.CalculateCapacityGrow(_bitCapacity, minBitCapacity);
-            //TODO Get rid of calculating growth by allocator.
-            //TODO Use capacity in blocks instead of bits, when new allocation policy is implemented. It will simplify the code significantly.
+            const int32 bitCapacity = CollectionUtils::CalculateCapacity<AllocationType>(Math::Max(minBitCapacity, DefaultCapacity));
             SetCapacity(bitCapacity, preserveContents);
         }
     }
