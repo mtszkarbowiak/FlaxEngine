@@ -231,10 +231,9 @@ public:
     /// </summary>
     void Clear()
     {
-        _locker.Lock();
+        ScopeLock lock{ _locker };
         Memory::DestructItems(_allocation.Get(), static_cast<int32>(_count));
         _count = 0;
-        _locker.Unlock();
     }
 
     /// <summary>
@@ -246,13 +245,13 @@ public:
     {
         if (capacity == Capacity())
             return;
-        _locker.Lock();
+
+        ScopeLock lock{ _locker };
         ASSERT(capacity >= 0);
         const int32 count = preserveContents ? (static_cast<int32>(_count) < capacity ? static_cast<int32>(_count) : capacity) : 0;
         _allocation.Relocate(capacity, static_cast<int32>(_count), count);
         Platform::AtomicStore(&_capacity, capacity);
         Platform::AtomicStore(&_count, count);
-        _locker.Unlock();
     }
 
     /// <summary>
@@ -262,7 +261,7 @@ public:
     /// <param name="preserveContents">True if preserve collection data when changing its size, otherwise collection after resize might not contain the previous data.</param>
     void Resize(const int32 size, const bool preserveContents = true)
     {
-        _locker.Lock();
+        ScopeLock lock{ _locker };
         if (_count > size)
         {
             Memory::DestructItems(_allocation.Get() + size, static_cast<int32>(_count) - size);
@@ -273,7 +272,6 @@ public:
             Memory::ConstructItems(_allocation.Get() + _count, size - static_cast<int32>(_count));
         }
         _count = size;
-        _locker.Unlock();
     }
 
     /// <summary>
@@ -282,7 +280,7 @@ public:
     /// <param name="minCapacity">The minimum capacity.</param>
     void EnsureCapacity(const int32 minCapacity)
     {
-        _locker.Lock();
+        ScopeLock lock{ _locker };
         int32 capacity = static_cast<int32>(Platform::AtomicRead(&_capacity));
         if (capacity < minCapacity)
         {
@@ -291,7 +289,6 @@ public:
             _allocation.Relocate(capacity, count, count);
             Platform::AtomicStore(&_capacity, capacity);
         }
-        _locker.Unlock();
     }
 
     /// <summary>
