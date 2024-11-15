@@ -5,6 +5,7 @@
 #include "Engine/Platform/Platform.h"
 #include "Engine/Core/Memory/Memory.h"
 #include "Engine/Core/Memory/Allocation.h"
+#include "Engine/Core/Collections/CollectionUtils.h"
 #include "Engine/Core/Math/Math.h"
 
 /// <summary>
@@ -18,11 +19,15 @@ public:
     using AllocationType = HeapAllocation; //TODO Reimplement RingBuffer to support custom allocation type. (Only heap allocation supports swap)
     using AllocationData = typename AllocationType::template Data<T>;
 
+    constexpr static int32 DefaultCapacity = AllocationType::MinCapacity;
+    // RingBuffer uses allocators minimal capacity as its default capacity.
+
 private:
     int32 _front = 0, _back = 0, _count = 0, _capacity = 0;
     AllocationData _allocation;
 
 public:
+
     ~RingBuffer()
     {
         Memory::DestructItems(Get() + Math::Min(_front, _back), _count);
@@ -47,7 +52,7 @@ public:
     {
         if (_capacity == 0 || _capacity == _count)
         {
-            const int32 capacity = _allocation.CalculateCapacityGrow(_capacity, _count + 1);
+            const int32 capacity = CollectionUtils::CalculateCapacity<AllocationType>(Math::Max(_count + 1, DefaultCapacity));
             AllocationData alloc;
             alloc.Allocate(capacity);
             const int32 frontCount = Math::Min(_capacity - _front, _count);
