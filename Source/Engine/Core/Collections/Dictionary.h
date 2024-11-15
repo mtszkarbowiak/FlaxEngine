@@ -8,6 +8,7 @@
 #include "Engine/Core/Collections/HashFunctions.h"
 #include "Engine/Core/Collections/Config.h"
 #include "Engine/Core/Collections/CollectionUtils.h"
+#include "Engine/Core/Math/Math.h"
 
 /// <summary>
 /// Template for unordered dictionary with mapped key with value pairs.
