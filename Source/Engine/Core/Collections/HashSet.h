@@ -8,6 +8,7 @@
 #include "Engine/Core/Collections/HashFunctions.h"
 #include "Engine/Core/Collections/Config.h"
 #include "Engine/Core/Collections/CollectionUtils.h"
+#include "Engine/Core/Math/Math.h"
 
 /// <summary>
 /// Template for unordered set of values (without duplicates with O(1) lookup access).
@@ -18,7 +19,14 @@ template<typename T, typename AllocationType = HeapAllocation>
 API_CLASS(InBuild) class HashSet
 {
     friend HashSet;
+
 public:
+    constexpr static int32 DefaultCapacity = Math::Clamp(
+        DICTIONARY_DEFAULT_CAPACITY,
+        AllocationType::MinCapacity,
+        AllocationType::MaxCapacity
+    );
+
     //TODO(mtszkarbowiak) Stage 1. - Implement move semantics for buckets.
     /// <summary>
     /// Describes single portion of space for the item in a hash map.
@@ -496,9 +504,9 @@ public:
     {
         if (_size >= minCapacity)
             return;
-        int32 capacity = _allocation.CalculateCapacityGrow(_size, minCapacity);
-        if (capacity < DICTIONARY_DEFAULT_CAPACITY)
-            capacity = DICTIONARY_DEFAULT_CAPACITY;
+
+        ASSERT(minCapacity <= AllocationType::MaxCapacity);
+        const int32 capacity = CollectionUtils::CalculateCapacity<AllocationType>(Math::Max(minCapacity, DefaultCapacity));
         SetCapacity(capacity, preserveContents);
     }
 
